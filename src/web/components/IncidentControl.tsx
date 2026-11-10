@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { ChevronDown, FlaskConical, Info, WandSparkles } from "lucide-react";
 import { useStore } from "zustand";
 import { INCIDENT_TYPES, type IncidentType, type StagedIncident } from "../../shared/types.js";
 import { api as defaultApi, ApiError, type ApiClient } from "../api/rest.js";
@@ -22,6 +23,15 @@ export const INCIDENT_LABELS: Record<IncidentType, string> = {
   disk_full: "Disk full",
   container_crash: "Container crash",
   container_restart_loop: "Container restart loop",
+};
+
+/** What each incident does to the simulated homelab, shown under the controls. */
+export const INCIDENT_HINTS: Record<IncidentType, string> = {
+  cpu_spike: "Host CPU climbs near full load and a stray unknown process appears.",
+  memory_leak: "The container's memory grows on every poll until the host is nearly full.",
+  disk_full: "The root filesystem fills almost to the brim.",
+  container_crash: "The container exits and writes errors to its log.",
+  container_restart_loop: "The container keeps restarting and logs a startup failure each time.",
 };
 
 export interface IncidentControlProps {
@@ -101,38 +111,48 @@ export function IncidentControl({ store = hauntedStore, api = defaultApi }: Inci
           <h2 className="card__title">Summon an incident</h2>
           <p className="card__subtitle">Stage a simulated failure, then watch the ghost react.</p>
         </div>
-        <span className="incident-control__badge">Simulator</span>
+        <span className="incident-control__badge">
+          <FlaskConical />
+          Simulator
+        </span>
       </header>
       <div className="incident-control__row">
         <label className="field incident-control__field">
           <span>Incident</span>
-          <select value={type} onChange={(e) => setType(e.target.value as IncidentType)} disabled={busy}>
-            {INCIDENT_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {INCIDENT_LABELS[t]}
-              </option>
-            ))}
-          </select>
-        </label>
-        {needsContainer && (
-          <label className="field incident-control__field">
-            <span>Container</span>
-            <select
-              value={target}
-              onChange={(e) => setContainer(e.target.value)}
-              disabled={busy || names.length === 0}
-            >
-              {names.length === 0 && <option value="">No containers yet</option>}
-              {names.map((n) => (
-                <option key={n} value={n}>
-                  {n}
+          <span className="select">
+            <select value={type} onChange={(e) => setType(e.target.value as IncidentType)} disabled={busy}>
+              {INCIDENT_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {INCIDENT_LABELS[t]}
                 </option>
               ))}
             </select>
+            <ChevronDown className="select__chevron" />
+          </span>
+        </label>
+        {needsContainer && (
+          <label className="field incident-control__field incident-control__field--container">
+            <span>Container</span>
+            <span className="select">
+              <select
+                value={target}
+                onChange={(e) => setContainer(e.target.value)}
+                disabled={busy || names.length === 0}
+              >
+                {names.length === 0 && <option value="">No containers yet</option>}
+                {names.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="select__chevron" />
+            </span>
           </label>
         )}
         <div className="incident-control__buttons">
           <button type="button" className="btn btn--spirit" onClick={stage} disabled={!canStage}>
+            <WandSparkles />
             Stage
           </button>
           <button type="button" className="btn btn--ghost" onClick={clearAll} disabled={busy}>
@@ -140,20 +160,26 @@ export function IncidentControl({ store = hauntedStore, api = defaultApi }: Inci
           </button>
         </div>
       </div>
+      <p className="incident-control__hint">
+        <Info />
+        {INCIDENT_HINTS[type]}
+      </p>
       {error !== undefined && (
         <p className="incident-control__error" role="alert">
           {error}
         </p>
       )}
-      {incidents.length === 0 ? (
-        <p className="incident-control__empty">No incidents staged.</p>
-      ) : (
-        <ul className="incident-control__list" aria-label="Staged incidents">
-          {incidents.map((i) => (
-            <li key={`${i.type}:${i.target ?? ""}`}>{describeIncident(i)}</li>
-          ))}
-        </ul>
-      )}
+      <div className="incident-control__staged">
+        {incidents.length === 0 ? (
+          <p className="incident-control__empty">No incidents staged.</p>
+        ) : (
+          <ul className="incident-control__list" aria-label="Staged incidents">
+            {incidents.map((i) => (
+              <li key={`${i.type}:${i.target ?? ""}`}>{describeIncident(i)}</li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }

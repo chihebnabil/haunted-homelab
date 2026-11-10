@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { ChevronUp, CircleAlert, RotateCcw, SendHorizontal, VolumeX } from "lucide-react";
 import { useStore } from "zustand";
 import type { GhostReply, LogEvent } from "../../shared/types.js";
 import { api as defaultApi, ApiError, type ApiClient } from "../api/rest.js";
 import { hauntedStore, selectRecentTurns, type ChatEntry, type HauntedStore } from "../state/store.js";
 import { ProposalCard } from "./ProposalCard.js";
+import { Equalizer, GhostMark } from "./visuals.js";
 import "./ChatPage.css";
 
 export interface ChatPageProps {
@@ -35,54 +37,84 @@ function formatTime(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleTimeString();
 }
 
-function LogEventList({ events }: { events: LogEvent[] }) {
-  if (events.length === 0) return null;
+function GhostAvatar({ speaking = false }: { speaking?: boolean }) {
   return (
-    <ul className="chat-page__events" aria-label="Log events">
-      {events.map((e, i) => (
-        <li key={i} className={`chat-page__event chat-page__event--${e.level}`}>
-          <time dateTime={e.timestamp}>{e.timestamp}</time>{" "}
-          <span className="chat-page__event-level">{e.level}</span>{" "}
-          <span className="chat-page__event-text">{e.text}</span>
-        </li>
-      ))}
-    </ul>
+    <span className={`chat-page__avatar${speaking ? " chat-page__avatar--speaking" : ""}`} aria-hidden="true">
+      <GhostMark />
+    </span>
+  );
+}
+
+/** Long log summaries show only their most recent events until the user asks for the rest. */
+export const VISIBLE_LOG_EVENTS = 5;
+
+function LogEventList({ events }: { events: LogEvent[] }) {
+  const [expanded, setExpanded] = useState(false);
+  if (events.length === 0) return null;
+  const hiddenCount = expanded ? 0 : Math.max(0, events.length - VISIBLE_LOG_EVENTS);
+  return (
+    <div className="chat-page__events-wrap">
+      {hiddenCount > 0 && (
+        <button type="button" className="chat-page__events-more" onClick={() => setExpanded(true)}>
+          <ChevronUp />
+          Show {hiddenCount} earlier {hiddenCount === 1 ? "event" : "events"}
+        </button>
+      )}
+      <ul className="chat-page__events" aria-label="Log events">
+        {events.slice(hiddenCount).map((e, i) => (
+          <li key={hiddenCount + i} className={`chat-page__event chat-page__event--${e.level}`}>
+            {/* Local time of day reads faster; the full timestamp stays in dateTime and the tooltip. */}
+            <time dateTime={e.timestamp} title={e.timestamp}>
+              {formatTime(e.timestamp)}
+            </time>{" "}
+            <span className="chat-page__event-level">{e.level}</span>{" "}
+            <span className="chat-page__event-text">{e.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
 interface GhostEntryProps {
   reply: GhostReply;
   voiceFailed: boolean;
+  speaking: boolean;
   store: HauntedStore;
   api: ApiClient;
   onReply: ((reply: GhostReply) => void) | undefined;
 }
 
-function GhostEntry({ reply, voiceFailed, store, api, onReply }: GhostEntryProps) {
+function GhostEntry({ reply, voiceFailed, speaking, store, api, onReply }: GhostEntryProps) {
   return (
     <li className="chat-page__entry chat-page__entry--ghost" data-testid="ghost-reply">
-      <span className="chat-page__avatar" aria-hidden="true">
-        👻
-      </span>
+      <GhostAvatar speaking={speaking} />
       <div className="chat-page__bubble">
-      <p className="chat-page__text">{reply.text}</p>
-      {reply.events && <LogEventList events={reply.events} />}
-      {reply.list && reply.list.length > 0 && (
-        <ul className="chat-page__list" aria-label="Names">
-          {reply.list.map((name, i) => (
-            <li key={i}>{name}</li>
-          ))}
-        </ul>
-      )}
-      {reply.proposal && <ProposalCard proposal={reply.proposal} store={store} api={api} onReply={onReply} />}
-      <div className="chat-page__meta">
-        {reply.createdAt && <time dateTime={reply.createdAt}>{formatTime(reply.createdAt)}</time>}
-        {voiceFailed && (
-          <span className="chat-page__voice-failed" role="status">
-            <span aria-hidden="true">🔇</span> {VOICE_FAILED_TEXT}
-          </span>
+        <p className="chat-page__text">{reply.text}</p>
+        {reply.events && <LogEventList events={reply.events} />}
+        {reply.list && reply.list.length > 0 && (
+          <ul className="chat-page__list" aria-label="Names">
+            {reply.list.map((name, i) => (
+              <li key={i}>{name}</li>
+            ))}
+          </ul>
         )}
-      </div>
+        {reply.proposal && <ProposalCard proposal={reply.proposal} store={store} api={api} onReply={onReply} />}
+        {(reply.createdAt || speaking || voiceFailed) && (
+          <div className="chat-page__meta">
+            {reply.createdAt && <time dateTime={reply.createdAt}>{formatTime(reply.createdAt)}</time>}
+            {speaking && (
+              <span className="chat-page__speaking">
+                <Equalizer /> speaking
+              </span>
+            )}
+            {voiceFailed && (
+              <span className="chat-page__voice-failed" role="status">
+                <VolumeX /> {VOICE_FAILED_TEXT}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </li>
   );
@@ -136,6 +168,7 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
   return (
     <section className="chat-page card" aria-label="Chat with the ghost">
       <header className="card__header chat-page__header">
+        <GhostAvatar />
         <div>
           <h2 className="card__title">Séance</h2>
           <p className="card__subtitle">Ask the ghost about your containers, logs, and host.</p>
@@ -146,9 +179,10 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
         {showIntro && (
           <div className="chat-page__intro">
             <span className="chat-page__intro-ghost" aria-hidden="true">
-              👻
+              <GhostMark />
             </span>
-            <p className="chat-page__intro-text">The ghost is listening. Ask it something, or try one of these:</p>
+            <p className="chat-page__intro-title">The ghost is listening</p>
+            <p className="chat-page__intro-text">Ask about a container, its logs, or the host. Or try one of these:</p>
             <div className="chat-page__suggestions">
               {suggestions.map((s) => (
                 <button key={s} type="button" className="chat-page__suggestion" onClick={() => void send(s)}>
@@ -170,6 +204,7 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
                 key={entry.id}
                 reply={entry.reply}
                 voiceFailed={voiceStatus[entry.reply.id] === "failed"}
+                speaking={voiceStatus[entry.reply.id] === "playing"}
                 store={store}
                 api={api}
                 onReply={onReply}
@@ -179,20 +214,25 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
         </ol>
 
         {pending && (
-          <p className="chat-page__waiting" role="status" aria-live="polite">
-            <span className="chat-page__dots" aria-hidden="true">
-              <span />
-              <span />
-              <span />
+          <div className="chat-page__waiting" role="status" aria-live="polite">
+            <GhostAvatar />
+            <span className="chat-page__waiting-bubble">
+              <span className="chat-page__dots" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+              <span>The ghost is stirring in the wires…</span>
             </span>
-            The ghost is stirring in the wires…
-          </p>
+          </div>
         )}
 
         {failed && !pending && (
           <div className="chat-page__error" role="alert">
+            <CircleAlert />
             <p>{failed.error}</p>
             <button type="button" className="btn btn--sm" onClick={() => void send(failed.question)}>
+              <RotateCcw />
               Retry
             </button>
           </div>
@@ -207,10 +247,12 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
           placeholder={`Is ${sampleContainer} feeling okay?`}
           value={input}
           maxLength={MAX_QUESTION_LENGTH}
+          autoComplete="off"
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit" className="btn btn--primary" disabled={pending || input.trim() === ""}>
-          Send
+        <button type="submit" className="btn btn--primary chat-page__send" disabled={pending || input.trim() === ""}>
+          <SendHorizontal />
+          <span className="chat-page__send-label">Send</span>
         </button>
       </form>
     </section>

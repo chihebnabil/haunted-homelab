@@ -1,3 +1,4 @@
+import { ShieldCheck } from "lucide-react";
 import { useStore } from "zustand";
 import { hauntedStore, type HauntedStore } from "../state/store.js";
 import "./controls.css";
@@ -23,7 +24,10 @@ export function PrivacyNotice({ store = hauntedStore }: PrivacyNoticeProps) {
   const config = useStore(store, (s) => s.publicConfig);
   return (
     <footer className="privacy-notice" aria-label="Privacy notice">
-      <p>{privacyNoticeText(config)}</p>
+      <p>
+        <ShieldCheck />
+        <span>{privacyNoticeText(config)}</span>
+      </p>
     </footer>
   );
 }
