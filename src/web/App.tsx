@@ -1,3 +1,5 @@
+// Shared tokens and primitives load first so component stylesheets can override them.
+import "./app.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 import type { GhostReply, ServerEvent } from "../shared/types.js";
@@ -20,7 +22,6 @@ import {
   selectTurns,
   type HauntedStore,
 } from "./state/store.js";
-import "./app.css";
 
 export interface AppProps {
   store?: HauntedStore;
@@ -52,6 +53,7 @@ export function App({
   player: suppliedPlayer,
 }: AppProps) {
   const voiceEnabled = useStore(store, (state) => state.voiceEnabled);
+  const connection = useStore(store, (state) => state.connection);
   const [startupError, setStartupError] = useState<string>();
   const player = useMemo(() => suppliedPlayer ?? new HtmlAudioPlayer(), [suppliedPlayer]);
   const spokenIds = useRef(new Set<string>());
@@ -136,11 +138,21 @@ export function App({
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div>
-          <p className="app-kicker">A presence watches the rack</p>
-          <h1>Haunted Homelab</h1>
+        <div className="app-brand">
+          <span className="app-logo" aria-hidden="true">
+            👻
+          </span>
+          <div>
+            <h1>Haunted Homelab</h1>
+            <p className="app-tagline">An AI sysadmin ghost watches the rack</p>
+          </div>
         </div>
-        <VoiceToggle store={store} onUnlock={() => player.unlock()} />
+        <div className="app-header__actions">
+          <span className={`app-live app-live--${connection}`} title={`Backend ${connection}`}>
+            {connection === "connected" ? "Live" : "Offline"}
+          </span>
+          <VoiceToggle store={store} onUnlock={() => player.unlock()} />
+        </div>
       </header>
 
       {startupError && (
@@ -154,10 +166,12 @@ export function App({
           <StatusPanel store={store} />
           <IncidentControl store={store} api={api} />
         </div>
-        <ChatPage store={store} api={api} onReply={receiveReply} />
+        <div className="app-chat">
+          <ChatPage store={store} api={api} onReply={receiveReply} />
+        </div>
       </main>
 
-      <AlertPopupStack store={store} />
+      <AlertPopupStack store={store} api={api} />
       <PrivacyNotice store={store} />
     </div>
   );

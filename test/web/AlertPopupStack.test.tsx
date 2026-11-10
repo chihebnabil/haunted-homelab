@@ -83,6 +83,47 @@ describe("AlertPopupStack", () => {
     expect(screen.getByRole("alert")).toBeTruthy();
   });
 
+  it("shows the alert's proposal with Confirm and Cancel controls (11.2)", () => {
+    const store = createHauntedStore();
+    store.getState().applyEvent({
+      type: "alert.raised",
+      alert: alert({ proposalId: "p1" }),
+      proposal: {
+        id: "p1",
+        action: "restart",
+        container: "plex",
+        reason: "Restore exited container plex.",
+        createdAt: "2025-10-31T00:00:10.000Z",
+        expiresAt: "2025-10-31T00:05:10.000Z",
+        status: "pending",
+      },
+    });
+    render(<AlertPopupStack store={store} />);
+
+    const popup = screen.getByRole("alert");
+    expect(within(popup).getByText("Restore exited container plex.")).toBeTruthy();
+    expect(within(popup).getByRole("button", { name: "Confirm" })).toBeTruthy();
+    expect(within(popup).getByRole("button", { name: "Cancel" })).toBeTruthy();
+  });
+
+  it("shows at most three popups and dismisses all at once", () => {
+    const store = createHauntedStore();
+    for (let i = 1; i <= 4; i++) {
+      store.getState().applyEvent({
+        type: "alert.raised",
+        alert: alert({ id: `a${i}`, key: `k${i}`, severity: "warning", message: `Haunting ${i}` }),
+      });
+    }
+    render(<AlertPopupStack store={store} />);
+
+    expect(screen.queryByText("Haunting 1")).toBeNull();
+    expect(screen.getByText("Haunting 4")).toBeTruthy();
+    expect(screen.getByText("1 older alert hidden")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss all" }));
+    expect(store.getState().popups).toEqual([]);
+  });
+
   it("shows a muted-speaker indicator when voice failed for the popup", () => {
     const store = createHauntedStore();
     store.getState().applyEvent({ type: "alert.raised", alert: alert() });

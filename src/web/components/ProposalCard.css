@@ -1,56 +1,56 @@
 .proposal-card {
-  margin-top: 0.5rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid #6b4fa3;
-  border-radius: 6px;
-  background: rgba(60, 30, 90, 0.35);
+  margin-top: 0.75rem;
+  padding: 0.8rem 0.9rem 0.9rem;
+  border: 1px solid rgb(124 245 196 / 0.3);
+  border-radius: var(--radius-sm);
+  background: rgb(7 12 11 / 0.6);
 }
 
-.proposal-card__title {
-  font-weight: 600;
-}
+.proposal-card--confirmed { border-color: rgb(94 230 168 / 0.35); }
+.proposal-card--cancelled,
+.proposal-card--expired { border-color: var(--border); opacity: 0.8; }
 
-.proposal-card__action {
-  text-transform: capitalize;
-  color: #e0c3ff;
-}
-
-.proposal-card__container {
-  font-family: ui-monospace, monospace;
-}
-
-.proposal-card__reason {
-  margin: 0.25rem 0;
-}
-
-.proposal-card__expiry,
-.proposal-card__status {
-  margin: 0.25rem 0;
-  font-size: 0.85rem;
-  opacity: 0.8;
-}
-
-.proposal-card--confirmed .proposal-card__status {
-  color: #8fe3a0;
-}
-
-.proposal-card--cancelled .proposal-card__status,
-.proposal-card--expired .proposal-card__status {
-  color: #f0a3a3;
-}
-
-.proposal-card__controls {
+.proposal-card__head {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
-.proposal-card__controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.proposal-card__kicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
+.proposal-card__expiry { font-size: 0.72rem; color: var(--faint); }
+
+.proposal-card__status {
+  margin: 0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--surface-3);
+  color: var(--muted);
+}
+.proposal-card--confirmed .proposal-card__status { background: rgb(94 230 168 / 0.14); color: var(--ok); }
+.proposal-card--expired .proposal-card__status { background: var(--warn-soft); color: var(--warn); }
+
+.proposal-card__title { margin: 0.45rem 0 0; font-size: 1rem; font-weight: 650; }
+.proposal-card__action { text-transform: capitalize; }
+.proposal-card__container { font-family: var(--font-mono); color: var(--accent); }
+
+.proposal-card__reason { margin: 0.2rem 0 0.75rem; font-size: 0.85rem; color: var(--muted); }
+
+.proposal-card__controls { display: flex; gap: 0.5rem; }
+
 .proposal-card__error {
-  margin: 0.5rem 0 0;
-  color: #f0a3a3;
-  font-size: 0.85rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.82rem;
+  color: #ffb3c1;
 }

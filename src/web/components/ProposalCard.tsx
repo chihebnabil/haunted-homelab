@@ -94,25 +94,28 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
       aria-label={`Proposal to ${latest.action} ${latest.container}`}
       data-status={latest.status}
     >
-      <header className="proposal-card__title">
+      <header className="proposal-card__head">
+        <span className="proposal-card__kicker">Proposed action</span>
+        {latest.status === "pending" ? (
+          <span className="proposal-card__expiry">
+            Expires <time dateTime={latest.expiresAt}>{formatTime(latest.expiresAt)}</time>
+          </span>
+        ) : (
+          <p className="proposal-card__status" role="status">
+            {STATUS_LABEL[latest.status]}
+          </p>
+        )}
+      </header>
+      <p className="proposal-card__title">
         <span className="proposal-card__action">{latest.action}</span>{" "}
         <span className="proposal-card__container">{latest.container}</span>
-      </header>
+      </p>
       <p className="proposal-card__reason">{latest.reason}</p>
-      {latest.status === "pending" ? (
-        <p className="proposal-card__expiry">
-          Expires at <time dateTime={latest.expiresAt}>{formatTime(latest.expiresAt)}</time>
-        </p>
-      ) : (
-        <p className="proposal-card__status" role="status">
-          {STATUS_LABEL[latest.status]}
-        </p>
-      )}
       <div className="proposal-card__controls">
-        <button type="button" className="proposal-card__confirm" onClick={onConfirm} disabled={disabled}>
+        <button type="button" className="btn btn--primary btn--sm" onClick={onConfirm} disabled={disabled}>
           Confirm
         </button>
-        <button type="button" className="proposal-card__cancel" onClick={onCancel} disabled={disabled}>
+        <button type="button" className="btn btn--ghost btn--sm" onClick={onCancel} disabled={disabled}>
           Cancel
         </button>
       </div>

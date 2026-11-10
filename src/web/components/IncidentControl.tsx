@@ -95,10 +95,16 @@ export function IncidentControl({ store = hauntedStore, api = defaultApi }: Inci
   const clearAll = () => run(() => api.clearIncidents());
 
   return (
-    <section className="incident-control" aria-label="Incident control">
-      <h2 className="incident-control__title">Summon an incident</h2>
+    <section className="incident-control card" aria-label="Incident control">
+      <header className="card__header">
+        <div>
+          <h2 className="card__title">Summon an incident</h2>
+          <p className="card__subtitle">Stage a simulated failure, then watch the ghost react.</p>
+        </div>
+        <span className="incident-control__badge">Simulator</span>
+      </header>
       <div className="incident-control__row">
-        <label className="incident-control__field">
+        <label className="field incident-control__field">
           <span>Incident</span>
           <select value={type} onChange={(e) => setType(e.target.value as IncidentType)} disabled={busy}>
             {INCIDENT_TYPES.map((t) => (
@@ -109,7 +115,7 @@ export function IncidentControl({ store = hauntedStore, api = defaultApi }: Inci
           </select>
         </label>
         {needsContainer && (
-          <label className="incident-control__field">
+          <label className="field incident-control__field">
             <span>Container</span>
             <select
               value={target}
@@ -125,12 +131,14 @@ export function IncidentControl({ store = hauntedStore, api = defaultApi }: Inci
             </select>
           </label>
         )}
-        <button type="button" className="incident-control__stage" onClick={stage} disabled={!canStage}>
-          Stage
-        </button>
-        <button type="button" className="incident-control__clear" onClick={clearAll} disabled={busy}>
-          Clear all
-        </button>
+        <div className="incident-control__buttons">
+          <button type="button" className="btn btn--spirit" onClick={stage} disabled={!canStage}>
+            Stage
+          </button>
+          <button type="button" className="btn btn--ghost" onClick={clearAll} disabled={busy}>
+            Clear all
+          </button>
+        </div>
       </div>
       {error !== undefined && (
         <p className="incident-control__error" role="alert">

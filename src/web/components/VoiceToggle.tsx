@@ -51,7 +51,7 @@ export function VoiceToggle({ store = hauntedStore, onUnlock }: VoiceToggleProps
         <span>Voice</span>
       </label>
       {onUnlock && !unlocked && (
-        <button type="button" className="voice-toggle__wake" onClick={wake} disabled={waking}>
+        <button type="button" className="btn btn--primary btn--sm" onClick={wake} disabled={waking}>
           Wake the ghost
         </button>
       )}

@@ -61,6 +61,10 @@ interface GhostEntryProps {
 function GhostEntry({ reply, voiceFailed, store, api, onReply }: GhostEntryProps) {
   return (
     <li className="chat-page__entry chat-page__entry--ghost" data-testid="ghost-reply">
+      <span className="chat-page__avatar" aria-hidden="true">
+        👻
+      </span>
+      <div className="chat-page__bubble">
       <p className="chat-page__text">{reply.text}</p>
       {reply.events && <LogEventList events={reply.events} />}
       {reply.list && reply.list.length > 0 && (
@@ -79,6 +83,7 @@ function GhostEntry({ reply, voiceFailed, store, api, onReply }: GhostEntryProps
           </span>
         )}
       </div>
+      </div>
     </li>
   );
 }
@@ -89,17 +94,20 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
   const pending = useStore(store, (s) => s.chat.pending);
   const failed = useStore(store, (s) => s.chat.failed);
   const voiceStatus = useStore(store, (s) => s.voiceStatus);
+  const sampleContainer = useStore(store, (s) => s.snapshot?.containers[0]?.name) ?? "plex";
   const [input, setInput] = useState("");
-  const endRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Put a failed question back in the input for resubmission (Requirement 6.7).
   useEffect(() => {
     if (failed) setInput(failed.question);
   }, [failed]);
 
+  // Keep the newest message in view by scrolling the conversation, not the whole page.
   useEffect(() => {
-    endRef.current?.scrollIntoView?.({ block: "end" });
-  }, [entries.length, pending]);
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [entries.length, pending, failed]);
 
   async function send(raw: string) {
     const question = raw.trim();
@@ -122,55 +130,86 @@ export function ChatPage({ store = hauntedStore, api = defaultApi, onReply }: Ch
     void send(input);
   }
 
+  const suggestions = [`Is ${sampleContainer} okay?`, `Summarize the ${sampleContainer} logs`, "How is the host doing?"];
+  const showIntro = entries.length === 0 && !pending && !failed;
+
   return (
-    <section className="chat-page" aria-label="Chat with the ghost">
-      <ol className="chat-page__entries">
-        {entries.map((entry: ChatEntry) =>
-          entry.kind === "user" ? (
-            <li key={entry.id} className="chat-page__entry chat-page__entry--user" data-testid="user-question">
-              <p className="chat-page__text">{entry.text}</p>
-            </li>
-          ) : (
-            <GhostEntry
-              key={entry.id}
-              reply={entry.reply}
-              voiceFailed={voiceStatus[entry.reply.id] === "failed"}
-              store={store}
-              api={api}
-              onReply={onReply}
-            />
-          ),
-        )}
-      </ol>
-
-      {pending && (
-        <p className="chat-page__waiting" role="status" aria-live="polite">
-          The ghost is stirring in the wires…
-        </p>
-      )}
-
-      {failed && !pending && (
-        <div className="chat-page__error" role="alert">
-          <p>{failed.error}</p>
-          <button type="button" onClick={() => void send(failed.question)}>
-            Retry
-          </button>
+    <section className="chat-page card" aria-label="Chat with the ghost">
+      <header className="card__header chat-page__header">
+        <div>
+          <h2 className="card__title">Séance</h2>
+          <p className="card__subtitle">Ask the ghost about your containers, logs, and host.</p>
         </div>
-      )}
+      </header>
 
-      <div ref={endRef} />
+      <div className="chat-page__scroll" ref={scrollRef}>
+        {showIntro && (
+          <div className="chat-page__intro">
+            <span className="chat-page__intro-ghost" aria-hidden="true">
+              👻
+            </span>
+            <p className="chat-page__intro-text">The ghost is listening. Ask it something, or try one of these:</p>
+            <div className="chat-page__suggestions">
+              {suggestions.map((s) => (
+                <button key={s} type="button" className="chat-page__suggestion" onClick={() => void send(s)}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <ol className="chat-page__entries">
+          {entries.map((entry: ChatEntry) =>
+            entry.kind === "user" ? (
+              <li key={entry.id} className="chat-page__entry chat-page__entry--user" data-testid="user-question">
+                <p className="chat-page__text">{entry.text}</p>
+              </li>
+            ) : (
+              <GhostEntry
+                key={entry.id}
+                reply={entry.reply}
+                voiceFailed={voiceStatus[entry.reply.id] === "failed"}
+                store={store}
+                api={api}
+                onReply={onReply}
+              />
+            ),
+          )}
+        </ol>
+
+        {pending && (
+          <p className="chat-page__waiting" role="status" aria-live="polite">
+            <span className="chat-page__dots" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+            The ghost is stirring in the wires…
+          </p>
+        )}
+
+        {failed && !pending && (
+          <div className="chat-page__error" role="alert">
+            <p>{failed.error}</p>
+            <button type="button" className="btn btn--sm" onClick={() => void send(failed.question)}>
+              Retry
+            </button>
+          </div>
+        )}
+      </div>
 
       <form className="chat-page__form" onSubmit={onSubmit}>
         <input
           type="text"
-          className="chat-page__input"
+          className="text-input chat-page__input"
           aria-label="Ask the ghost"
-          placeholder="Is the Plex server feeling okay?"
+          placeholder={`Is ${sampleContainer} feeling okay?`}
           value={input}
           maxLength={MAX_QUESTION_LENGTH}
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit" disabled={pending || input.trim() === ""}>
+        <button type="submit" className="btn btn--primary" disabled={pending || input.trim() === ""}>
           Send
         </button>
       </form>

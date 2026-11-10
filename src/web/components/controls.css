@@ -1,99 +1,129 @@
 /* IncidentControl, VoiceToggle, PrivacyNotice */
 
-.incident-control {
-  border: 1px solid #3a2f4f;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  background: #16121f;
-  color: #e6e0f0;
-}
+/* ---------- IncidentControl ---------- */
 
-.incident-control__title {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  color: #b89cff;
+.incident-control__badge {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--spirit-soft);
+  color: var(--spirit);
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .incident-control__row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.incident-control__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
-}
+.incident-control__field { flex: 1 1 11rem; }
+.incident-control__buttons { display: flex; gap: 0.5rem; }
 
-.incident-control select,
-.incident-control button,
-.voice-toggle__wake {
-  font: inherit;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  border: 1px solid #4b3d66;
-  background: #241c33;
-  color: inherit;
-}
-
-.incident-control button:disabled,
-.voice-toggle__wake:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.incident-control__stage {
-  border-color: #8a5cff;
-}
-
-.incident-control__error,
-.voice-toggle__error {
-  color: #ff7a7a;
+.incident-control__error {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--danger-soft);
+  color: #ffb3c1;
   font-size: 0.85rem;
 }
 
 .incident-control__empty {
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  opacity: 0.7;
+  margin: 0.9rem 0 0;
+  font-size: 0.82rem;
+  color: var(--faint);
 }
 
 .incident-control__list {
-  margin: 0.5rem 0 0;
-  padding-left: 1.2rem;
-  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.voice-toggle {
+.incident-control__list li {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  color: #e6e0f0;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid rgb(185 162 255 / 0.35);
+  border-radius: 999px;
+  background: var(--spirit-soft);
+  color: #e3daff;
+  font-size: 0.8rem;
 }
+
+.incident-control__list li::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--spirit);
+  box-shadow: 0 0 8px var(--spirit);
+}
+
+/* ---------- VoiceToggle ---------- */
+
+.voice-toggle { display: inline-flex; align-items: center; gap: 0.75rem; }
 
 .voice-toggle__switch {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
   cursor: pointer;
+  user-select: none;
 }
 
-.voice-toggle__wake {
-  border-color: #8a5cff;
+.voice-toggle__switch input {
+  appearance: none;
+  position: relative;
+  width: 2.3rem;
+  height: 1.3rem;
+  margin: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-3);
   cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
 }
+
+.voice-toggle__switch input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.3rem - 6px);
+  height: calc(1.3rem - 6px);
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.voice-toggle__switch input:checked { background: var(--accent-soft); border-color: rgb(124 245 196 / 0.6); }
+.voice-toggle__switch input:checked::after { transform: translateX(1rem); background: var(--accent); }
+.voice-toggle__switch:has(input:checked) { color: var(--text); }
+
+.voice-toggle__error { color: #ffb3c1; font-size: 0.8rem; }
+
+/* ---------- PrivacyNotice ---------- */
 
 .privacy-notice {
-  padding: 0.5rem 1rem;
-  border-top: 1px solid #3a2f4f;
-  background: #0f0c16;
-  color: #a99cc0;
-  font-size: 0.8rem;
+  padding: 0.85rem clamp(1rem, 3vw, 2rem);
+  border-top: 1px solid var(--border);
+  background: rgb(7 9 12 / 0.7);
+  color: var(--faint);
+  font-size: 0.78rem;
+  text-align: center;
 }
 
-.privacy-notice p {
-  margin: 0;
-}
+.privacy-notice p { margin: 0 auto; max-width: 70rem; }
