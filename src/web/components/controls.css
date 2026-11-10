@@ -3,16 +3,22 @@
 /* ---------- IncidentControl ---------- */
 
 .incident-control__badge {
-  padding: 0.15rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.6rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--spirit-line);
   border-radius: 999px;
   background: var(--spirit-soft);
-  color: var(--spirit);
-  font-size: 0.7rem;
+  color: var(--spirit-text);
+  font-size: 0.68rem;
   font-weight: 650;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
+.incident-control__badge .lucide { width: 0.85rem; height: 0.85rem; }
 
 .incident-control__row {
   display: flex;
@@ -21,29 +27,44 @@
   gap: 0.75rem;
 }
 
-.incident-control__field { flex: 1 1 11rem; }
+.incident-control__field { flex: 1 1 12rem; }
+.incident-control__field--container { flex: 1 1 9rem; }
 .incident-control__buttons { display: flex; gap: 0.5rem; }
+.incident-control__buttons .btn { min-height: 2.5rem; }
+
+.incident-control__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.incident-control__hint .lucide { width: 0.95rem; height: 0.95rem; margin-top: 0.12rem; color: var(--spirit); }
 
 .incident-control__error {
   margin: 0.75rem 0 0;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--danger-line);
   border-radius: var(--radius-sm);
   background: var(--danger-soft);
-  color: #ffb3c1;
+  color: var(--danger-text);
   font-size: 0.85rem;
 }
 
-.incident-control__empty {
-  margin: 0.9rem 0 0;
-  font-size: 0.82rem;
-  color: var(--faint);
+.incident-control__staged {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--border-strong);
 }
+
+.incident-control__empty { margin: 0; font-size: 0.8rem; color: var(--faint); }
 
 .incident-control__list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
-  margin: 0.9rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -51,13 +72,16 @@
 .incident-control__list li {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
-  border: 1px solid rgb(185 162 255 / 0.35);
+  gap: 0.45rem;
+  height: 1.75rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--spirit-line);
   border-radius: 999px;
   background: var(--spirit-soft);
-  color: #e3daff;
-  font-size: 0.8rem;
+  color: var(--spirit-text);
+  font-size: 0.78rem;
+  font-weight: 550;
+  animation: materialize 0.35s var(--ease-out) both;
 }
 
 .incident-control__list li::before {
@@ -67,6 +91,7 @@
   border-radius: 50%;
   background: var(--spirit);
   box-shadow: 0 0 8px var(--spirit);
+  animation: app-blink 1.8s ease-in-out infinite;
 }
 
 /* ---------- VoiceToggle ---------- */
@@ -77,24 +102,37 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  height: 2rem;
+  padding: 0 0.3rem 0 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
   user-select: none;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
 }
+.voice-toggle__switch:hover { border-color: var(--border-hover); }
+.voice-toggle__switch:has(input:checked) { color: var(--text); }
+.voice-toggle__switch--speaking { border-color: var(--spirit-line); background: var(--spirit-soft); }
+
+.voice-toggle__icon { display: inline-grid; place-items: center; width: 1rem; font-size: 1rem; }
+.voice-toggle__switch--speaking .voice-toggle__icon { color: var(--spirit); }
 
 .voice-toggle__switch input {
   appearance: none;
   position: relative;
-  width: 2.3rem;
-  height: 1.3rem;
+  flex: none;
+  width: 2.25rem;
+  height: 1.375rem;
   margin: 0;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   background: var(--surface-3);
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .voice-toggle__switch input::after {
@@ -102,28 +140,61 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: calc(1.3rem - 6px);
-  height: calc(1.3rem - 6px);
+  width: calc(1.375rem - 6px);
+  height: calc(1.375rem - 6px);
   border-radius: 50%;
   background: var(--muted);
-  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+  transition: transform 0.25s var(--ease-spring), background-color 0.2s;
 }
 
-.voice-toggle__switch input:checked { background: var(--accent-soft); border-color: rgb(124 245 196 / 0.6); }
-.voice-toggle__switch input:checked::after { transform: translateX(1rem); background: var(--accent); }
-.voice-toggle__switch:has(input:checked) { color: var(--text); }
+.voice-toggle__switch input:checked { background: var(--accent-soft); border-color: var(--accent-line); }
+.voice-toggle__switch input:checked::after { transform: translateX(0.875rem); background: var(--accent); }
+.voice-toggle__switch input:focus-visible { outline: none; box-shadow: var(--ring); }
 
-.voice-toggle__error { color: #ffb3c1; font-size: 0.8rem; }
+/* The one-time audio unlock gets a slow glow so first-time visitors notice it. */
+.voice-toggle__wake { animation: voice-wake-glow 2.8s ease-in-out infinite; }
+
+.voice-toggle__error { color: var(--danger-text); font-size: 0.8rem; }
+
+@keyframes voice-wake-glow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent, 0 10px 24px -14px var(--accent-glow); }
+  50% { box-shadow: 0 0 0 4px var(--accent-soft), 0 10px 28px -10px var(--accent-glow); }
+}
+
+@media (max-width: 600px) {
+  .voice-toggle { gap: 0.5rem; }
+  .voice-toggle__switch { padding-left: 0.5rem; }
+  /* Icons carry the meaning on narrow screens; the labels stay for screen readers. */
+  .voice-toggle__label,
+  .voice-toggle__wake-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .voice-toggle__wake { width: 2rem; padding: 0; }
+}
 
 /* ---------- PrivacyNotice ---------- */
 
 .privacy-notice {
-  padding: 0.85rem clamp(1rem, 3vw, 2rem);
+  padding: 1rem var(--page-x) 1.25rem;
   border-top: 1px solid var(--border);
-  background: rgb(7 9 12 / 0.7);
+  background: rgb(5 7 10 / 0.6);
   color: var(--faint);
-  font-size: 0.78rem;
-  text-align: center;
+  font-size: 0.75rem;
 }
 
-.privacy-notice p { margin: 0 auto; max-width: 70rem; }
+.privacy-notice p {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.45rem;
+  max-width: 70rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.privacy-notice .lucide { width: 0.95rem; height: 0.95rem; margin-top: 0.05rem; color: var(--muted); }

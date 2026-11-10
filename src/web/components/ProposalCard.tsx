@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Check, Clock, LoaderCircle, RotateCcw, Square, WandSparkles } from "lucide-react";
 import { useStore } from "zustand";
 import type { ActionProposalDTO, ConfirmRejectionReason, GhostReply, ProposalStatus } from "../../shared/types.js";
 import { api as defaultApi, ApiError, type ApiClient } from "../api/rest.js";
@@ -37,9 +38,11 @@ function formatTime(iso: string): string {
 /** An Action_Proposal with Confirm and Cancel controls (Requirements 11.2, 11.6, 11.8). */
 export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi, onReply }: ProposalCardProps) {
   const latest = useStore(store, (s) => selectProposal(s, proposal));
-  const [busy, setBusy] = useState(false);
+  // Which request is in flight, so only the clicked button shows a spinner.
+  const [inFlight, setInFlight] = useState<"confirm" | "cancel">();
   const [error, setError] = useState<string | undefined>();
 
+  const busy = inFlight !== undefined;
   const pending = latest.status === "pending";
   const disabled = !pending || busy;
 
@@ -59,7 +62,7 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
 
   async function onConfirm() {
     if (disabled) return;
-    setBusy(true);
+    setInFlight("confirm");
     setError(undefined);
     try {
       const res = await api.confirmProposal(latest.id);
@@ -70,13 +73,13 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
     } catch (err) {
       handleFailure(err);
     } finally {
-      setBusy(false);
+      setInFlight(undefined);
     }
   }
 
   async function onCancel() {
     if (disabled) return;
-    setBusy(true);
+    setInFlight("cancel");
     setError(undefined);
     try {
       const res = await api.cancelProposal(latest.id);
@@ -84,7 +87,7 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
     } catch (err) {
       handleFailure(err);
     } finally {
-      setBusy(false);
+      setInFlight(undefined);
     }
   }
 
@@ -92,12 +95,17 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
     <section
       className={`proposal-card proposal-card--${latest.status}`}
       aria-label={`Proposal to ${latest.action} ${latest.container}`}
+      aria-busy={busy}
       data-status={latest.status}
     >
       <header className="proposal-card__head">
-        <span className="proposal-card__kicker">Proposed action</span>
+        <span className="proposal-card__kicker">
+          <WandSparkles />
+          Proposed action
+        </span>
         {latest.status === "pending" ? (
           <span className="proposal-card__expiry">
+            <Clock />
             Expires <time dateTime={latest.expiresAt}>{formatTime(latest.expiresAt)}</time>
           </span>
         ) : (
@@ -107,12 +115,16 @@ export function ProposalCard({ proposal, store = hauntedStore, api = defaultApi,
         )}
       </header>
       <p className="proposal-card__title">
+        <span className="proposal-card__action-icon" aria-hidden="true">
+          {latest.action === "stop" ? <Square /> : <RotateCcw />}
+        </span>
         <span className="proposal-card__action">{latest.action}</span>{" "}
         <span className="proposal-card__container">{latest.container}</span>
       </p>
       <p className="proposal-card__reason">{latest.reason}</p>
       <div className="proposal-card__controls">
         <button type="button" className="btn btn--primary btn--sm" onClick={onConfirm} disabled={disabled}>
+          {inFlight === "confirm" ? <LoaderCircle className="proposal-card__spinner" /> : <Check />}
           Confirm
         </button>
         <button type="button" className="btn btn--ghost btn--sm" onClick={onCancel} disabled={disabled}>

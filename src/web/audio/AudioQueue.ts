@@ -12,6 +12,10 @@
  * - `clear()` drops pending clips, aborts the in-flight fetch, and stops the
  *   player without reporting failures. Callbacks from the cleared clip are
  *   ignored.
+ * - The optional `onPlaybackStart` and `onPlaybackEnd` options report when a
+ *   clip starts and stops playing, so the UI can show that the ghost speaks.
+ *   Every start is followed by exactly one end: after playback, after a failed
+ *   playback (before `onFailure`), or when `clear()` stops the clip.
  */
 
 /** Plays one audio source. `play` resolves when playback ends and rejects on a playback error. */
@@ -29,6 +33,10 @@ export interface AudioQueueOptions {
   fetchTimeoutMs?: number;
   /** Releases an object URL. Default `URL.revokeObjectURL` when available. */
   revokeUrl?: (url: string) => void;
+  /** Called when a clip starts playing. */
+  onPlaybackStart?: (id: string) => void;
+  /** Called when a playing clip ends, fails, or is stopped by `clear()`. */
+  onPlaybackEnd?: (id: string) => void;
 }
 
 export const AUDIO_FETCH_TIMEOUT_MS = 15_000;
@@ -66,6 +74,8 @@ export class AudioQueue {
   private current: Slot | null = null;
   private readonly fetchTimeoutMs: number;
   private readonly revokeUrl: (url: string) => void;
+  private readonly onPlaybackStart: ((id: string) => void) | undefined;
+  private readonly onPlaybackEnd: ((id: string) => void) | undefined;
 
   constructor(
     private readonly player: Player,
@@ -75,6 +85,8 @@ export class AudioQueue {
   ) {
     this.fetchTimeoutMs = options.fetchTimeoutMs ?? AUDIO_FETCH_TIMEOUT_MS;
     this.revokeUrl = options.revokeUrl ?? defaultRevoke;
+    this.onPlaybackStart = options.onPlaybackStart;
+    this.onPlaybackEnd = options.onPlaybackEnd;
   }
 
   enqueue(messageId: string): void {
@@ -93,6 +105,7 @@ export class AudioQueue {
       slot.controller.abort();
     } else {
       this.player.stop();
+      this.onPlaybackEnd?.(slot.id);
     }
     this.release(slot);
   }
@@ -152,6 +165,7 @@ export class AudioQueue {
 
     let played: Promise<void>;
     try {
+      this.onPlaybackStart?.(slot.id);
       played = this.player.play(url);
     } catch (err) {
       played = Promise.reject(err);
@@ -167,6 +181,7 @@ export class AudioQueue {
     if (this.current !== slot) return;
     this.current = null;
     try {
+      if (slot.phase === "playing") this.onPlaybackEnd?.(slot.id);
       if (failed) this.onFailure(slot.id);
     } finally {
       this.next();

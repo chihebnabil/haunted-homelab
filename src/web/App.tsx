@@ -1,6 +1,7 @@
 // Shared tokens and primitives load first so component stylesheets can override them.
 import "./app.css";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CircleAlert } from "lucide-react";
 import { useStore } from "zustand";
 import type { GhostReply, ServerEvent } from "../shared/types.js";
 import { api as defaultApi, type ApiClient } from "./api/rest.js";
@@ -15,6 +16,7 @@ import { ChatPage } from "./components/ChatPage.js";
 import { IncidentControl } from "./components/IncidentControl.js";
 import { PrivacyNotice } from "./components/PrivacyNotice.js";
 import { StatusPanel } from "./components/StatusPanel.js";
+import { GhostMark } from "./components/visuals.js";
 import { VoiceToggle } from "./components/VoiceToggle.js";
 import { loadHistory, saveHistory } from "./state/chatHistory.js";
 import {
@@ -54,6 +56,8 @@ export function App({
 }: AppProps) {
   const voiceEnabled = useStore(store, (state) => state.voiceEnabled);
   const connection = useStore(store, (state) => state.connection);
+  // A snapshot has arrived before, so a disconnect now means the socket is reconnecting.
+  const seenSnapshot = useStore(store, (state) => state.lastSnapshotAt !== undefined);
   const [startupError, setStartupError] = useState<string>();
   const player = useMemo(() => suppliedPlayer ?? new HtmlAudioPlayer(), [suppliedPlayer]);
   const spokenIds = useRef(new Set<string>());
@@ -66,6 +70,11 @@ export function App({
         player,
         (messageId, signal) => api.fetchSpeech(messageId, signal),
         (messageId) => store.getState().setVoiceStatus(messageId, "failed"),
+        {
+          // "playing" drives the speaking indicators on the message and in the header.
+          onPlaybackStart: (messageId) => store.getState().setVoiceStatus(messageId, "playing"),
+          onPlaybackEnd: (messageId) => store.getState().setVoiceStatus(messageId, "done"),
+        },
       ),
     [api, player, store],
   );
@@ -135,28 +144,34 @@ export function App({
     };
   }, [api, connectSocket, queue, store]);
 
+  const connectionLabel = connection === "connected" ? "Live" : seenSnapshot ? "Reconnecting…" : "Connecting…";
+
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div className="app-brand">
-          <span className="app-logo" aria-hidden="true">
-            👻
-          </span>
-          <div>
-            <h1>Haunted Homelab</h1>
-            <p className="app-tagline">An AI sysadmin ghost watches the rack</p>
+        <div className="app-header__inner">
+          <div className="app-brand">
+            <span className="app-logo">
+              <GhostMark />
+            </span>
+            <div className="app-brand__text">
+              <h1>Haunted Homelab</h1>
+              <p className="app-tagline">An AI sysadmin ghost watches the rack</p>
+            </div>
           </div>
-        </div>
-        <div className="app-header__actions">
-          <span className={`app-live app-live--${connection}`} title={`Backend ${connection}`}>
-            {connection === "connected" ? "Live" : "Offline"}
-          </span>
-          <VoiceToggle store={store} onUnlock={() => player.unlock()} />
+          <div className="app-header__actions">
+            <span className={`app-live app-live--${connection}`} title={`Backend ${connection}`}>
+              <span className="app-live__dot" aria-hidden="true" />
+              <span className="app-live__label">{connectionLabel}</span>
+            </span>
+            <VoiceToggle store={store} onUnlock={() => player.unlock()} />
+          </div>
         </div>
       </header>
 
       {startupError && (
         <p className="app-startup-error" role="status">
+          <CircleAlert />
           {startupError}
         </p>
       )}
