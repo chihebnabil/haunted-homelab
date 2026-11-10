@@ -120,7 +120,7 @@ export function loadConfig(
       if (fileValue !== undefined) {
         value = fileValue;
       } else {
-        value = typeof spec.default === "function" ? spec.default(platform) : spec.default;
+        value = typeof spec.default === "function" ? spec.default({ platform, env }) : spec.default;
       }
     }
 

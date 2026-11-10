@@ -31,6 +31,12 @@ export class ConfigError extends Error {
 
 export type SettingKind = "string" | "integer" | "number";
 
+/** Inputs for defaults that depend on where the server runs. */
+export interface DefaultContext {
+  platform: string;
+  env: Readonly<Record<string, string | undefined>>;
+}
+
 export interface SettingSpec {
   /** Environment variable name. */
   env: string;
@@ -40,7 +46,7 @@ export interface SettingSpec {
   key: string;
   kind: SettingKind;
   /** Documented default. Undefined means the setting is required. */
-  default?: string | number | ((platform: string) => string);
+  default?: string | number | ((ctx: DefaultContext) => string);
 }
 
 export const DEFAULT_TTS_INSTRUCTIONS =
@@ -48,6 +54,14 @@ export const DEFAULT_TTS_INSTRUCTIONS =
 
 export function defaultDockerEndpoint(platform: string): string {
   return platform === "win32" ? "npipe:////./pipe/docker_engine" : "unix:///var/run/docker.sock";
+}
+
+/**
+ * Loopback by default. Render (which always sets RENDER=true) only routes traffic to 0.0.0.0,
+ * so the server listens on all interfaces there unless HAUNTED_HOST says otherwise.
+ */
+export function defaultHost(env: DefaultContext["env"]): string {
+  return env.RENDER === "true" ? "0.0.0.0" : "127.0.0.1";
 }
 
 /** Every configurable setting, in the order problems are reported. */
@@ -59,13 +73,18 @@ export const SETTINGS = [
   { env: "HAUNTED_TTS_VOICE", key: "tts.voice", kind: "string", default: "onyx" },
   { env: "HAUNTED_TTS_INSTRUCTIONS", key: "tts.instructions", kind: "string", default: DEFAULT_TTS_INSTRUCTIONS },
   { env: "HAUNTED_DATA_SOURCE", key: "dataSource", kind: "string", default: "simulator" },
-  { env: "HAUNTED_DOCKER_ENDPOINT", key: "docker.endpoint", kind: "string", default: defaultDockerEndpoint },
+  {
+    env: "HAUNTED_DOCKER_ENDPOINT",
+    key: "docker.endpoint",
+    kind: "string",
+    default: ({ platform }: DefaultContext) => defaultDockerEndpoint(platform),
+  },
   { env: "HAUNTED_POLL_INTERVAL_MS", key: "monitor.pollIntervalMs", kind: "integer", default: 5000 },
   { env: "HAUNTED_CPU_THRESHOLD", key: "thresholds.cpuPercent", kind: "number", default: 90 },
   { env: "HAUNTED_CPU_DURATION_S", key: "thresholds.cpuDurationSeconds", kind: "number", default: 30 },
   { env: "HAUNTED_MEMORY_THRESHOLD", key: "thresholds.memoryPercent", kind: "number", default: 90 },
   { env: "HAUNTED_DISK_THRESHOLD", key: "thresholds.diskPercent", kind: "number", default: 90 },
-  { env: "HAUNTED_HOST", key: "server.host", kind: "string", default: "127.0.0.1" },
+  { env: "HAUNTED_HOST", key: "server.host", kind: "string", default: ({ env }: DefaultContext) => defaultHost(env) },
   { env: "HAUNTED_PORT", fallbackEnv: "PORT", key: "server.port", kind: "integer", default: 3000 },
   {
     env: "HAUNTED_ALLOWED_ORIGINS",

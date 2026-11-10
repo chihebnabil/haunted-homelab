@@ -54,6 +54,14 @@ describe("loadConfig", () => {
     expect(c.openrouter.apiKey).toBe(KEY);
   });
 
+  it("listens on all interfaces on Render unless HAUNTED_HOST or the file says otherwise", () => {
+    const render = { HAUNTED_OPENROUTER_API_KEY: KEY, RENDER: "true" };
+    expect(loadConfig(render, undefined).server.host).toBe("0.0.0.0");
+    expect(loadConfig({ ...render, HAUNTED_HOST: "127.0.0.1" }, undefined).server.host).toBe("127.0.0.1");
+    expect(loadConfig(render, { server: { host: "10.0.0.5" } }).server.host).toBe("10.0.0.5");
+    expect(loadConfig({ HAUNTED_OPENROUTER_API_KEY: KEY, RENDER: "false" }, undefined).server.host).toBe("127.0.0.1");
+  });
+
   it("uses the platform PORT when HAUNTED_PORT is unset, and HAUNTED_PORT wins when both are set", () => {
     const base = { HAUNTED_OPENROUTER_API_KEY: KEY, PORT: "10000" };
     expect(loadConfig(base, { server: { port: 4000 } }).server.port).toBe(10000);

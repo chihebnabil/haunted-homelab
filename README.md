@@ -83,7 +83,7 @@ Settings come from environment variables, then an optional JSON config file, the
 | `HAUNTED_CPU_DURATION_S` | `thresholds.cpuDurationSeconds` | `30` |
 | `HAUNTED_MEMORY_THRESHOLD` | `thresholds.memoryPercent` | `90` |
 | `HAUNTED_DISK_THRESHOLD` | `thresholds.diskPercent` | `90` |
-| `HAUNTED_HOST` | `server.host` | `127.0.0.1`. Use `0.0.0.0` on a hosting platform. |
+| `HAUNTED_HOST` | `server.host` | `127.0.0.1`, or `0.0.0.0` on Render (detected through `RENDER=true`). Use `0.0.0.0` on other hosting platforms. |
 | `HAUNTED_PORT` | `server.port` | The platform's `PORT` if set, otherwise `3000` |
 | `HAUNTED_ALLOWED_ORIGINS` | `server.allowedOrigins` | Render's `RENDER_EXTERNAL_URL` if set, otherwise none. Comma-separated, e.g. `https://ghost.example.com`. |
 | `HAUNTED_SIM_SEED` | `simulator.seed` | `1337` |
@@ -120,14 +120,9 @@ Render's free web service runs the whole app, WebSocket included.
 
 1. Create a **Web Service** from this repository and pick the **Free** instance type.
 2. Set **Build Command** to `npm ci && npm run build` and **Start Command** to `npm start`.
-3. Add these environment variables:
+3. Add one environment variable: `HAUNTED_OPENROUTER_API_KEY` with your OpenRouter key.
 
-   | Variable | Value |
-   |---|---|
-   | `HAUNTED_OPENROUTER_API_KEY` | your OpenRouter key |
-   | `HAUNTED_HOST` | `0.0.0.0` |
-
-That's all. The server listens on Render's `PORT` and accepts browser requests from the service's own `https://….onrender.com` URL through `RENDER_EXTERNAL_URL`. If you add a custom domain, set `HAUNTED_ALLOWED_ORIGINS` to every origin you use, including the `onrender.com` one.
+That's all. On Render the server listens on `0.0.0.0` at Render's `PORT` and accepts browser requests from the service's own `https://….onrender.com` URL, using the `RENDER`, `PORT`, and `RENDER_EXTERNAL_URL` variables Render sets for every service. If you add a custom domain, set `HAUNTED_ALLOWED_ORIGINS` to every origin you use, including the `onrender.com` one.
 
 Free services sleep after 15 minutes without traffic and take about a minute to wake, so open the page shortly before a demo. Alerts, chat, and staged incidents are kept in memory and reset when the service sleeps or redeploys.
 
