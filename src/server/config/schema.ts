@@ -20,6 +20,8 @@ export interface Config {
   /** `allowedOrigins`: public origins (scheme://host[:port]) the origin guard accepts in addition to loopback. */
   server: { host: string; port: number; allowedOrigins: string[] };
   simulator: { seed: number };
+  /** Daily caps on AI spend: LLM calls (chat and alert text) and newly synthesized speech clips. */
+  limits: { dailyLlmCalls: number; dailySpeechClips: number };
 }
 
 export class ConfigError extends Error {
@@ -94,6 +96,8 @@ export const SETTINGS = [
     default: "",
   },
   { env: "HAUNTED_SIM_SEED", key: "simulator.seed", kind: "integer", default: 1337 },
+  { env: "HAUNTED_DAILY_LLM_CALLS", key: "limits.dailyLlmCalls", kind: "integer", default: 600 },
+  { env: "HAUNTED_DAILY_SPEECH_CLIPS", key: "limits.dailySpeechClips", kind: "integer", default: 300 },
 ] as const satisfies readonly SettingSpec[];
 
 // ---------------------------------------------------------------------------
@@ -237,5 +241,9 @@ export const ConfigSchema = z.object({
       max: Number.MAX_SAFE_INTEGER,
       integer: true,
     }),
+  }),
+  limits: z.object({
+    dailyLlmCalls: numberIn("limits.dailyLlmCalls", { min: 1, integer: true }),
+    dailySpeechClips: numberIn("limits.dailySpeechClips", { min: 1, integer: true }),
   }),
 }) satisfies z.ZodType<Config>;

@@ -28,6 +28,7 @@ describe("loadConfig", () => {
       thresholds: { cpuPercent: 90, cpuDurationSeconds: 30, memoryPercent: 90, diskPercent: 90 },
       server: { host: "127.0.0.1", port: 3000, allowedOrigins: [] },
       simulator: { seed: 1337 },
+      limits: { dailyLlmCalls: 600, dailySpeechClips: 300 },
     });
   });
 

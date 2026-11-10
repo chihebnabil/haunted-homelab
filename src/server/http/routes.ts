@@ -3,7 +3,7 @@
  * Every response body is built from shared DTO types that carry no secrets.
  */
 
-import type { FastifyInstance, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import {
   INCIDENT_TYPES,
@@ -26,6 +26,7 @@ import { IncidentTargetRequiredError } from "../datasource/simulator/state.js";
 import type { SimulatorSource } from "../datasource/simulator/SimulatorSource.js";
 import { ContainerNotFoundError, DataSourceUnavailableError } from "../datasource/types.js";
 import { LlmProviderError, LlmTimeoutError } from "../llm/LlmClient.js";
+import { DAY_MS, retryAfterSeconds, type UsageLimits } from "../limits/limits.js";
 import type { Logger } from "../logging/logger.js";
 import type { MessageStore } from "../messages/MessageStore.js";
 import { TtsProviderError, TtsTimeoutError, type TtsClient } from "../tts/TtsClient.js";
@@ -40,6 +41,23 @@ export const BAD_REQUEST_ERROR = "The ghost could not read that request.";
 export const UNKNOWN_MESSAGE_ERROR = "That message has faded from the ghost's memory.";
 export const SPEECH_FAILED_ERROR = "The voice was lost in the static.";
 export const SIMULATOR_ONLY_ERROR = "Incidents can only be staged when the simulator haunts this machine.";
+export const CHAT_RATE_LIMITED_ERROR = "The ghost is weary from so many questions. Rest a moment, then ask again.";
+export const DAILY_LIMIT_ERROR = "The ghost has spoken enough for today. Its voice returns tomorrow.";
+
+/**
+ * Key for per-visitor limits: the first X-Forwarded-For entry behind a proxy (Render), else the
+ * socket address. A spoofed header only evades the per-visitor limit; the daily caps still apply.
+ */
+export function clientKey(request: FastifyRequest): string {
+  const forwarded = request.headers["x-forwarded-for"];
+  const first = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(",")[0]?.trim();
+  return first !== undefined && first.length > 0 ? first : request.ip;
+}
+
+function sendLimited(reply: FastifyReply, retryAfterMs: number, error: string): FastifyReply {
+  void reply.header("Retry-After", String(retryAfterSeconds(retryAfterMs)));
+  return sendError(reply, 429, error);
+}
 
 export interface RouteDeps {
   publicConfig: PublicConfig;
@@ -54,6 +72,7 @@ export interface RouteDeps {
   simulator?: SimulatorSource;
   clock: Clock;
   logger: Logger;
+  limits: UsageLimits;
 }
 
 const ChatBody = z.object({
@@ -82,7 +101,7 @@ function sendError(reply: FastifyReply, status: number, error: string): FastifyR
 }
 
 export function registerRoutes(app: FastifyInstance, deps: RouteDeps): void {
-  const { agent, proposals, messages, tts, hub, logger } = deps;
+  const { agent, proposals, messages, tts, hub, logger, limits } = deps;
 
   app.setErrorHandler((err, request, reply) => {
     const status = typeof err.statusCode === "number" && err.statusCode >= 400 && err.statusCode < 500 ? err.statusCode : 500;
@@ -105,6 +124,14 @@ export function registerRoutes(app: FastifyInstance, deps: RouteDeps): void {
   app.post("/api/chat", async (request, reply) => {
     const parsed = ChatBody.safeParse(request.body);
     if (!parsed.success) return sendError(reply, 400, "Questions must be 1 to 2000 characters with at most 10 history turns.");
+
+    if (!limits.llmDaily.hasRoom()) {
+      logger.warn("daily LLM budget exhausted; chat refused");
+      return sendLimited(reply, DAY_MS, DAILY_LIMIT_ERROR);
+    }
+    const allowed = limits.chatPerClient.take(clientKey(request));
+    if (!allowed.ok) return sendLimited(reply, allowed.retryAfterMs, CHAT_RATE_LIMITED_ERROR);
+
     try {
       const { question, history } = parsed.data;
       const body: ChatResponse = await agent.answer(question, history, deps.clock.now() + CHAT_DEADLINE_MS);
@@ -166,6 +193,14 @@ export function registerRoutes(app: FastifyInstance, deps: RouteDeps): void {
 
     let audio = messages.getAudio(id);
     if (audio === undefined) {
+      // Only new clips cost money; cached replays skip the limits.
+      const perClient = limits.speechPerClient.take(clientKey(request));
+      if (!perClient.ok) return sendLimited(reply, perClient.retryAfterMs, SPEECH_FAILED_ERROR);
+      const daily = limits.speechDaily.take();
+      if (!daily.ok) {
+        logger.warn("daily speech budget exhausted; speech refused");
+        return sendLimited(reply, daily.retryAfterMs, SPEECH_FAILED_ERROR);
+      }
       try {
         audio = await tts.speak(text);
       } catch (err) {

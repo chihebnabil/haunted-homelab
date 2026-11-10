@@ -4,6 +4,7 @@ import { buildApp, type HauntedApp } from "../../../src/server/app.js";
 import { chatFailureMessage } from "../../../src/server/agent/replyTemplates.js";
 import { loadConfig } from "../../../src/server/config/loadConfig.js";
 import { FORBIDDEN_ORIGIN_ERROR } from "../../../src/server/http/originGuard.js";
+import { CHAT_RATE_LIMITED_ERROR, DAILY_LIMIT_ERROR } from "../../../src/server/http/routes.js";
 import type { LlmProvider } from "../../../src/server/llm/LlmClient.js";
 import { createLogger } from "../../../src/server/logging/logger.js";
 import type { TtsProvider } from "../../../src/server/tts/TtsClient.js";
@@ -121,6 +122,52 @@ describe("Backend HTTP layer", () => {
     }
     expect(ttsCalls()).toBe(1);
     expect((await haunted.app.inject({ method: "GET", url: "/api/speech/nope" })).statusCode).toBe(404);
+  });
+
+  it("rate limits chat per visitor with a persona 429 and Retry-After", async () => {
+    const { haunted } = await setup(async () => reply("The plex vessel hums."));
+    const ask = (ip: string) =>
+      haunted.app.inject({
+        method: "POST",
+        url: "/api/chat",
+        headers: { origin: ORIGIN, "x-forwarded-for": `${ip}, 10.0.0.1` },
+        payload: { question: "Status?", history: [] },
+      });
+    for (let i = 0; i < 15; i++) expect((await ask("203.0.113.7")).statusCode).toBe(200);
+    const limited = await ask("203.0.113.7");
+    expect(limited.statusCode).toBe(429);
+    expect(limited.json()).toEqual({ error: CHAT_RATE_LIMITED_ERROR });
+    expect(Number(limited.headers["retry-after"])).toBeGreaterThan(0);
+    expect((await ask("198.51.100.4")).statusCode).toBe(200);
+  });
+
+  it("refuses chat once the daily LLM budget is used, while alerts fall back to templates", async () => {
+    const { haunted } = await setup(async () => reply("The machine hums."), { HAUNTED_DAILY_LLM_CALLS: "1" });
+    const headers = { origin: ORIGIN };
+    const payload = { question: "Status?", history: [] };
+    expect((await haunted.app.inject({ method: "POST", url: "/api/chat", headers, payload })).statusCode).toBe(200);
+    const refused = await haunted.app.inject({ method: "POST", url: "/api/chat", headers, payload });
+    expect(refused.statusCode).toBe(429);
+    expect(refused.json()).toEqual({ error: DAILY_LIMIT_ERROR });
+
+    haunted.start();
+    await waitFor(() => haunted.monitor.latestSnapshot());
+    await haunted.app.inject({ method: "POST", url: "/api/sim/incidents", headers, payload: { type: "container_crash", container: "plex" } });
+    const alert = await waitFor<HauntingAlert>(() => haunted.alerts.activeAlerts().find((a) => a.ruleId === "container_exited"), 3000);
+    expect(alert.message).toBe("The spirit of plex has left its vessel. It now lies exited in the dark.");
+  });
+
+  it("limits new speech clips per day but replays cached clips for free", async () => {
+    const { haunted, ttsCalls } = await setup(async () => reply("The machine hums."), { HAUNTED_DAILY_SPEECH_CLIPS: "1" });
+    const headers = { origin: ORIGIN };
+    const first = (await haunted.app.inject({ method: "POST", url: "/api/chat", headers, payload: { question: "A?", history: [] } })).json<GhostReply>();
+    const second = (await haunted.app.inject({ method: "POST", url: "/api/chat", headers, payload: { question: "B?", history: [] } })).json<GhostReply>();
+
+    expect((await haunted.app.inject({ method: "GET", url: `/api/speech/${first.id}` })).statusCode).toBe(200);
+    expect((await haunted.app.inject({ method: "GET", url: `/api/speech/${first.id}` })).statusCode).toBe(200);
+    const limited = await haunted.app.inject({ method: "GET", url: `/api/speech/${second.id}` });
+    expect(limited.statusCode).toBe(429);
+    expect(ttsCalls()).toBe(1);
   });
 
   it("validates incident staging and returns 404 for incident routes in Docker mode", async () => {

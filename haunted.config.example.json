@@ -31,5 +31,9 @@
   },
   "simulator": {
     "seed": 1337
+  },
+  "limits": {
+    "dailyLlmCalls": 600,
+    "dailySpeechClips": 300
   }
 }

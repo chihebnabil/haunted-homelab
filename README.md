@@ -4,9 +4,13 @@ An AI sysadmin ghost that watches your homelab. It raises spooky alerts when som
 
 All AI traffic goes through [OpenRouter](https://openrouter.ai) with a single API key: one model writes the replies and another speaks them.
 
+**Live demo:** <https://haunted-homelab.onrender.com>. The free server sleeps when idle, so the first visit can take about a minute. Then follow the [demo walkthrough](#demo-walkthrough).
+
 ![Haunted Homelab dashboard with alerts, chat, and a confirmed restart](docs/screenshot.png)
 
-> **Status:** simulator MVP. The app runs against a built-in simulated homelab. A real Docker data source is designed but not built yet (see [Project status](#project-status)).
+> **Status:** the live demo runs against a built-in simulated homelab, so anyone can crash containers safely. The AI, voice, alerts, and actions are real. A real Docker data source is designed but not built yet (see [Project status](#project-status)).
+
+Built for **Kiroween 2026** with [Kiro](https://kiro.dev). See [Built with Kiro](#built-with-kiro).
 
 ## Features
 
@@ -87,6 +91,8 @@ Settings come from environment variables, then an optional JSON config file, the
 | `HAUNTED_PORT` | `server.port` | The platform's `PORT` if set, otherwise `3000` |
 | `HAUNTED_ALLOWED_ORIGINS` | `server.allowedOrigins` | Render's `RENDER_EXTERNAL_URL` if set, otherwise none. Comma-separated, e.g. `https://ghost.example.com`. |
 | `HAUNTED_SIM_SEED` | `simulator.seed` | `1337` |
+| `HAUNTED_DAILY_LLM_CALLS` | `limits.dailyLlmCalls` | `600` LLM calls per day (chat and alert messages) |
+| `HAUNTED_DAILY_SPEECH_CLIPS` | `limits.dailySpeechClips` | `300` new speech clips per day |
 
 Any OpenRouter model slug works for `HAUNTED_LLM_MODEL`. Voice names differ between TTS models, so changing `HAUNTED_TTS_MODEL` may also require a different `HAUNTED_TTS_VOICE`.
 
@@ -126,14 +132,52 @@ That's all. On Render the server listens on `0.0.0.0` at Render's `PORT` and acc
 
 Free services sleep after 15 minutes without traffic and take about a minute to wake, so open the page shortly before a demo. Alerts, chat, and staged incidents are kept in memory and reset when the service sleeps or redeploys.
 
-**Before sharing the URL:** there is no login, so anyone with the link can chat and trigger speech on your OpenRouter credits. Set a [credit limit on the key](https://openrouter.ai/keys). Actions only affect simulated containers.
+**Before sharing the URL:** there is no login, so anyone with the link can chat and trigger speech on your OpenRouter credits. Built-in [usage limits](#security-and-privacy) cap the damage, but also set a [credit limit on the key](https://openrouter.ai/keys). Actions only affect simulated containers.
+
+To keep the demo awake for visitors, point a free uptime monitor (for example UptimeRobot) at `https://<your-service>.onrender.com/api/config` every 5 minutes. Render's 750 free hours a month cover one service running all month.
 
 ## Security and privacy
 
 - **Localhost by default.** The server binds to `127.0.0.1` and has **no authentication**. Only expose it, for example on Render, if you accept that anyone with the URL can use it.
 - **Origin check.** POST and DELETE requests and WebSocket upgrades are rejected with 403 unless they come from the server's own loopback origin, the Vite dev origin (`http://localhost:5173`), or an origin listed in `HAUNTED_ALLOWED_ORIGINS`. Requests without an `Origin` header, such as curl, are allowed. Rejected origins are logged.
+- **Usage limits.** Each visitor can ask 15 questions and fetch 40 new speech clips per 10 minutes. Above that, the server answers 429 with a persona message and `Retry-After`. Daily caps (`HAUNTED_DAILY_LLM_CALLS`, `HAUNTED_DAILY_SPEECH_CLIPS`) bound total AI spend. When the LLM cap is reached, chat is refused and alert messages use their templates. Replaying a cached clip is free.
 - **Secrets stay on the server.** The API key is never sent to the browser and is scrubbed from every log line.
 - **What leaves your machine.** Host metrics, container names, log excerpts, and your questions go to OpenRouter and the provider of the configured LLM model. Only server-written reply and alert text goes to the TTS model. The page footer states this and names both models.
+
+## Built with Kiro
+
+The whole project was built in Kiro, spec first. Everything Kiro used is in [`.kiro/`](.kiro).
+
+### Spec-driven development
+
+[`.kiro/specs/haunted-homelab`](.kiro/specs/haunted-homelab) holds the three spec documents:
+
+- **[`requirements.md`](.kiro/specs/haunted-homelab/requirements.md):** 13 requirements with 80 acceptance criteria written as EARS statements ("WHEN the user clicks the Confirm control… THE Action_Executor SHALL…"). A glossary fixes the terms used everywhere else (Data_Source, Haunting_Alert, Action_Proposal).
+- **[`design.md`](.kiro/specs/haunted-homelab/design.md):** architecture, interfaces, and data models. It also lists numbered correctness properties tied to requirements, for example "a proposal's action runs at most once", "alert and recovery messages carry the measured value verbatim", and "secrets never leave the backend". Design decisions that protect users became hard rules there:
+  - the action executor is reachable only from a confirmed proposal;
+  - speech is requested by message ID, so the server never speaks arbitrary text;
+  - the rule engine is a pure function.
+- **[`tasks.md`](.kiro/specs/haunted-homelab/tasks.md):** 100 tasks, each tied to requirement IDs, with a dependency graph in waves and three test checkpoints. Optional tasks (property tests, the Docker source) are marked `*`, which made the MVP scope explicit and traceable instead of silently cut.
+
+Kiro then ran the plan with **Run all tasks**. Independent tasks in the same wave went to parallel sub-agents: config, logging, and data-source types were built at the same time, then the simulator, rule engine, proposals, and LLM/TTS clients. At each checkpoint Kiro ran the full suite. Kiro also reported what the design left open, for example that Render needs `0.0.0.0` and that the origin guard needed public origins, and fixed it.
+
+Compared with vibe coding, the spec made the safety properties testable before any code existed. The tests check exactly what the design promised: proposals expire at 5 minutes inclusive, a second confirm is rejected while the first is running, and invented numbers trigger a retry and then a template.
+
+### Vibe coding
+
+After the spec was implemented, conversational sessions handled the parts a spec doesn't cover well:
+
+- **UI polish.** Kiro wrote a throwaway preview server with mock AI providers and drove headless Chrome to screenshot the app at desktop and phone widths. It then fixed what the screenshots showed: popups covering controls, a table overflowing on mobile, and alert proposals that were never rendered.
+- **Deployment.** Kiro read the Render logs and moved the server to Render's `PORT` and `0.0.0.0`. It then added allowed origins and per-visitor and daily usage limits for a public demo.
+
+### Steering
+
+- [`project.md`](.kiro/steering/project.md) is always included. It covers the import style, the architecture rules that must never break (only a confirmed proposal can act, speech by message ID only), secret handling, and the commands Kiro may run (tests once, never in watch mode).
+- [`web-ui.md`](.kiro/steering/web-ui.md) is included only for files under `src/web/`. It covers the design tokens, shared primitives, overflow rules, and the accessibility roles that the tests rely on.
+
+### Hooks
+
+- [`check-after-task`](.kiro/hooks/check-after-task.json) runs `npm run check` (type-check, lint, and every test) whenever a spec task is marked complete, so no task is left done with broken code.
 
 ## Project status
 
@@ -152,6 +196,7 @@ Free services sleep after 15 minutes without traffic and take about a minute to 
 | `npm run build` | Compiles the server to `dist/server` and the web app to `dist/web` |
 | `npm start` | Runs the production build |
 | `npm test` | Runs every test once with Vitest |
+| `npm run check` | Type-check, lint, and every test |
 | `npm run lint` | ESLint, including a rule that allows `dockerode` and `systeminformation` only under `src/server/datasource/` |
 
 Tests use Vitest, fast-check, and Testing Library, with mock LLM and TTS providers. They make no network calls.
@@ -173,3 +218,7 @@ src/
   web/           React app: components, store, REST and socket clients, audio queue
 test/            mirrors src/
 ```
+
+## License
+
+[MIT](LICENSE)

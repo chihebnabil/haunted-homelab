@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Check after spec task",
+      "trigger": "PostTaskExec",
+      "description": "After a spec task is marked completed, run type-check, lint, and the full test suite once so a task is never left done with broken code.",
+      "action": {
+        "type": "command",
+        "command": "npm run check",
+        "timeout": 600
+      }
+    }
+  ]
+}

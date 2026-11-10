@@ -21,6 +21,8 @@ import type { DataSource } from "./datasource/types.js";
 import { allowedOrigins, createOriginGuard } from "./http/originGuard.js";
 import { registerRoutes } from "./http/routes.js";
 import { WebSocketHub } from "./http/ws.js";
+import { createUsageLimits } from "./limits/limits.js";
+import { withLlmBudget } from "./llm/budget.js";
 import { LlmClient, type LlmProvider } from "./llm/LlmClient.js";
 import type { Logger } from "./logging/logger.js";
 import { MessageStore } from "./messages/MessageStore.js";
@@ -58,7 +60,13 @@ export async function buildApp(options: BuildAppOptions): Promise<HauntedApp> {
   const clock: Clock = options.clock ?? { now: () => Date.now() };
   const dataSource = options.dataSource ?? createDataSource(config, clock, logger);
 
-  const llm = new LlmClient(options.llmProvider, logger);
+  const limits = createUsageLimits(
+    { llmCalls: config.limits.dailyLlmCalls, speechClips: config.limits.dailySpeechClips },
+    clock,
+  );
+  // Every LLM call (chat answers, their retries, alert messages) counts against the daily budget.
+  // Past it, chat is refused with 429 and alert messages fall back to their templates.
+  const llm = new LlmClient(withLlmBudget(options.llmProvider, limits.llmDaily), logger);
   const tts = new TtsClient(options.ttsProvider, config.tts, logger);
   const messages = new MessageStore();
   const proposals = new ProposalStore({ ds: dataSource, clock });
@@ -94,6 +102,7 @@ export async function buildApp(options: BuildAppOptions): Promise<HauntedApp> {
     latestSnapshot: () => monitor.latestSnapshot(),
     clock,
     logger,
+    limits,
   };
   registerRoutes(
     app,

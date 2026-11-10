@@ -12,7 +12,9 @@
     "build": "tsc -p tsconfig.server.json && vite build",
     "start": "node dist/server/main.js",
     "test": "vitest --run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "npm run typecheck && npm run lint && npm test"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
