@@ -93,7 +93,14 @@ export function loadConfig(
 
   const raw: PlainObject = {};
   for (const spec of SETTINGS as readonly SettingSpec[]) {
-    const envValue = env[spec.env];
+    // The HAUNTED_ variable wins over a platform fallback such as PORT; both win over the file.
+    const envName =
+      env[spec.env] !== undefined
+        ? spec.env
+        : spec.fallbackEnv !== undefined && env[spec.fallbackEnv] !== undefined
+          ? spec.fallbackEnv
+          : undefined;
+    const envValue = envName === undefined ? undefined : env[envName];
     let value: unknown;
 
     if (envValue !== undefined) {
@@ -102,7 +109,7 @@ export function loadConfig(
       } else {
         const n = parseStrictNumber(envValue);
         if (n === undefined) {
-          problems.push(`${spec.env} must be ${expectedKind(spec)}, got ${JSON.stringify(envValue)}`);
+          problems.push(`${envName} must be ${expectedKind(spec)}, got ${JSON.stringify(envValue)}`);
           flagged.add(spec.key);
           continue;
         }

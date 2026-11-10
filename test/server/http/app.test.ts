@@ -71,6 +71,26 @@ describe("Backend HTTP layer", () => {
     await expect(haunted.app.injectWS("/ws", { headers })).rejects.toThrow();
   });
 
+  it("accepts requests from a configured public origin such as the Render URL", async () => {
+    const { haunted } = await setup(async () => reply("unused"), {
+      RENDER_EXTERNAL_URL: "https://haunted-homelab.onrender.com",
+    });
+    const ok = await haunted.app.inject({
+      method: "DELETE",
+      url: "/api/sim/incidents",
+      headers: { origin: "https://haunted-homelab.onrender.com" },
+    });
+    expect(ok.statusCode).toBe(200);
+    const ws = await haunted.app.injectWS("/ws", { headers: { origin: "https://haunted-homelab.onrender.com" } });
+    ws.terminate();
+    const foreign = await haunted.app.inject({
+      method: "DELETE",
+      url: "/api/sim/incidents",
+      headers: { origin: "https://evil.onrender.com" },
+    });
+    expect(foreign.statusCode).toBe(403);
+  });
+
   it("answers chat, maps provider failures to 502, and speaks stored replies once per id", async () => {
     let fail = false;
     const { haunted, ttsCalls } = await setup(async () => {

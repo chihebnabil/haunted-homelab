@@ -83,8 +83,9 @@ Settings come from environment variables, then an optional JSON config file, the
 | `HAUNTED_CPU_DURATION_S` | `thresholds.cpuDurationSeconds` | `30` |
 | `HAUNTED_MEMORY_THRESHOLD` | `thresholds.memoryPercent` | `90` |
 | `HAUNTED_DISK_THRESHOLD` | `thresholds.diskPercent` | `90` |
-| `HAUNTED_HOST` | `server.host` | `127.0.0.1` |
-| `HAUNTED_PORT` | `server.port` | `3000` |
+| `HAUNTED_HOST` | `server.host` | `127.0.0.1`. Use `0.0.0.0` on a hosting platform. |
+| `HAUNTED_PORT` | `server.port` | The platform's `PORT` if set, otherwise `3000` |
+| `HAUNTED_ALLOWED_ORIGINS` | `server.allowedOrigins` | Render's `RENDER_EXTERNAL_URL` if set, otherwise none. Comma-separated, e.g. `https://ghost.example.com`. |
 | `HAUNTED_SIM_SEED` | `simulator.seed` | `1337` |
 
 Any OpenRouter model slug works for `HAUNTED_LLM_MODEL`. Voice names differ between TTS models, so changing `HAUNTED_TTS_MODEL` may also require a different `HAUNTED_TTS_VOICE`.
@@ -113,10 +114,29 @@ flowchart LR
 
 The full requirements, design, and task plan are in [`.kiro/specs/haunted-homelab`](.kiro/specs/haunted-homelab).
 
+## Deploy on Render (free)
+
+Render's free web service runs the whole app, WebSocket included.
+
+1. Create a **Web Service** from this repository and pick the **Free** instance type.
+2. Set **Build Command** to `npm ci && npm run build` and **Start Command** to `npm start`.
+3. Add these environment variables:
+
+   | Variable | Value |
+   |---|---|
+   | `HAUNTED_OPENROUTER_API_KEY` | your OpenRouter key |
+   | `HAUNTED_HOST` | `0.0.0.0` |
+
+That's all. The server listens on Render's `PORT` and accepts browser requests from the service's own `https://….onrender.com` URL through `RENDER_EXTERNAL_URL`. If you add a custom domain, set `HAUNTED_ALLOWED_ORIGINS` to every origin you use, including the `onrender.com` one.
+
+Free services sleep after 15 minutes without traffic and take about a minute to wake, so open the page shortly before a demo. Alerts, chat, and staged incidents are kept in memory and reset when the service sleeps or redeploys.
+
+**Before sharing the URL:** there is no login, so anyone with the link can chat and trigger speech on your OpenRouter credits. Set a [credit limit on the key](https://openrouter.ai/keys). Actions only affect simulated containers.
+
 ## Security and privacy
 
-- **Localhost by default.** The server binds to `127.0.0.1` and has **no authentication**. Do not expose it to a network you don't trust.
-- **Origin check.** POST and DELETE requests and WebSocket upgrades are rejected with 403 unless they come from the server's own loopback origin or the Vite dev origin (`http://localhost:5173`). Requests without an `Origin` header, such as curl, are allowed.
+- **Localhost by default.** The server binds to `127.0.0.1` and has **no authentication**. Only expose it, for example on Render, if you accept that anyone with the URL can use it.
+- **Origin check.** POST and DELETE requests and WebSocket upgrades are rejected with 403 unless they come from the server's own loopback origin, the Vite dev origin (`http://localhost:5173`), or an origin listed in `HAUNTED_ALLOWED_ORIGINS`. Requests without an `Origin` header, such as curl, are allowed. Rejected origins are logged.
 - **Secrets stay on the server.** The API key is never sent to the browser and is scrubbed from every log line.
 - **What leaves your machine.** Host metrics, container names, log excerpts, and your questions go to OpenRouter and the provider of the configured LLM model. Only server-written reply and alert text goes to the TTS model. The page footer states this and names both models.
 
@@ -126,7 +146,7 @@ The full requirements, design, and task plan are in [`.kiro/specs/haunted-homela
 |---|---|
 | Simulator data source, alerts, chat, voice, proposals, web UI | Done |
 | Docker data source (`HAUNTED_DATA_SOURCE=docker`) | Designed, not built. Selecting it stops the server with a clear message. |
-| Public hosting | Not supported yet. The origin check only allows loopback origins, so a hosted URL gets 403 on chat, actions, and live updates. A setting for allowed public origins is needed first. |
+| Public hosting | Works on Render (see [Deploy on Render](#deploy-on-render-free)). There is no authentication. |
 | Optional property and integration tests in the spec | Not written |
 
 ## Development

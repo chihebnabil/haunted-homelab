@@ -26,7 +26,7 @@ describe("loadConfig", () => {
       docker: { endpoint: "unix:///var/run/docker.sock" },
       monitor: { pollIntervalMs: 5000 },
       thresholds: { cpuPercent: 90, cpuDurationSeconds: 30, memoryPercent: 90, diskPercent: 90 },
-      server: { host: "127.0.0.1", port: 3000 },
+      server: { host: "127.0.0.1", port: 3000, allowedOrigins: [] },
       simulator: { seed: 1337 },
     });
   });
@@ -53,6 +53,46 @@ describe("loadConfig", () => {
     expect(c.thresholds.memoryPercent).toBe(90);
     expect(c.openrouter.apiKey).toBe(KEY);
   });
+
+  it("uses the platform PORT when HAUNTED_PORT is unset, and HAUNTED_PORT wins when both are set", () => {
+    const base = { HAUNTED_OPENROUTER_API_KEY: KEY, PORT: "10000" };
+    expect(loadConfig(base, { server: { port: 4000 } }).server.port).toBe(10000);
+    expect(loadConfig({ ...base, HAUNTED_PORT: "8080" }, undefined).server.port).toBe(8080);
+    expect(() => loadConfig({ HAUNTED_OPENROUTER_API_KEY: KEY, PORT: "abc" }, undefined)).toThrow(
+      /PORT must be an integer, got "abc"/,
+    );
+  });
+
+  it("parses, normalizes, and deduplicates allowed origins", () => {
+    const c = loadConfig(
+      {
+        HAUNTED_OPENROUTER_API_KEY: KEY,
+        HAUNTED_ALLOWED_ORIGINS: " https://ghost.example.com/ , http://192.168.1.20:3000,https://ghost.example.com",
+      },
+      undefined,
+    );
+    expect(c.server.allowedOrigins).toEqual(["https://ghost.example.com", "http://192.168.1.20:3000"]);
+    const fromFile = loadConfig({ HAUNTED_OPENROUTER_API_KEY: KEY }, { server: { allowedOrigins: ["https://a.example"] } });
+    expect(fromFile.server.allowedOrigins).toEqual(["https://a.example"]);
+  });
+
+  it("allows Render's external URL by default and lets HAUNTED_ALLOWED_ORIGINS replace it", () => {
+    const render = { HAUNTED_OPENROUTER_API_KEY: KEY, RENDER_EXTERNAL_URL: "https://haunted-homelab.onrender.com" };
+    expect(loadConfig(render, undefined).server.allowedOrigins).toEqual(["https://haunted-homelab.onrender.com"]);
+    expect(
+      loadConfig({ ...render, HAUNTED_ALLOWED_ORIGINS: "https://ghost.example.com" }, undefined).server.allowedOrigins,
+    ).toEqual(["https://ghost.example.com"]);
+  });
+
+  it.each(["*", "ghost.example.com", "ftp://ghost.example.com", "https://user:pw@ghost.example.com"])(
+    "rejects the allowed origin %j",
+    (origin) => {
+      const problems = problemsOf(() =>
+        loadConfig({ HAUNTED_OPENROUTER_API_KEY: KEY, HAUNTED_ALLOWED_ORIGINS: origin }, undefined),
+      );
+      expect(problems).toEqual([expect.stringContaining(`HAUNTED_ALLOWED_ORIGINS`)]);
+    },
+  );
 
   it("treats empty TTS instructions as none", () => {
     const c = loadConfig({ HAUNTED_OPENROUTER_API_KEY: KEY, HAUNTED_TTS_INSTRUCTIONS: "" }, undefined);

@@ -64,7 +64,13 @@ async function main(): Promise<void> {
   await haunted.app.listen({ host: config.server.host, port: config.server.port });
   haunted.start();
   logger.info(
-    { host: config.server.host, port: config.server.port, dataSource: config.dataSource, llmModel: config.llm.model },
+    {
+      host: config.server.host,
+      port: config.server.port,
+      allowedOrigins: config.server.allowedOrigins,
+      dataSource: config.dataSource,
+      llmModel: config.llm.model,
+    },
     "the ghost has entered the machine",
   );
 

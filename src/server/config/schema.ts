@@ -17,7 +17,8 @@ export interface Config {
   docker: { endpoint: string };
   monitor: { pollIntervalMs: number };
   thresholds: { cpuPercent: number; cpuDurationSeconds: number; memoryPercent: number; diskPercent: number };
-  server: { host: string; port: number };
+  /** `allowedOrigins`: public origins (scheme://host[:port]) the origin guard accepts in addition to loopback. */
+  server: { host: string; port: number; allowedOrigins: string[] };
   simulator: { seed: number };
 }
 
@@ -33,6 +34,8 @@ export type SettingKind = "string" | "integer" | "number";
 export interface SettingSpec {
   /** Environment variable name. */
   env: string;
+  /** Platform-provided variable read when `env` is unset, such as `PORT` on Render. */
+  fallbackEnv?: string;
   /** Dotted config file key, e.g. "openrouter.apiKey". */
   key: string;
   kind: SettingKind;
@@ -63,7 +66,14 @@ export const SETTINGS = [
   { env: "HAUNTED_MEMORY_THRESHOLD", key: "thresholds.memoryPercent", kind: "number", default: 90 },
   { env: "HAUNTED_DISK_THRESHOLD", key: "thresholds.diskPercent", kind: "number", default: 90 },
   { env: "HAUNTED_HOST", key: "server.host", kind: "string", default: "127.0.0.1" },
-  { env: "HAUNTED_PORT", key: "server.port", kind: "integer", default: 3000 },
+  { env: "HAUNTED_PORT", fallbackEnv: "PORT", key: "server.port", kind: "integer", default: 3000 },
+  {
+    env: "HAUNTED_ALLOWED_ORIGINS",
+    fallbackEnv: "RENDER_EXTERNAL_URL",
+    key: "server.allowedOrigins",
+    kind: "string",
+    default: "",
+  },
   { env: "HAUNTED_SIM_SEED", key: "simulator.seed", kind: "integer", default: 1337 },
 ] as const satisfies readonly SettingSpec[];
 
@@ -118,6 +128,41 @@ function isHttpUrl(s: string): boolean {
 
 const DOCKER_ENDPOINT_SCHEMES = ["unix://", "npipe://", "tcp://", "http://", "https://"];
 
+/** The origin (scheme://host[:port]) of an http or https URL, or undefined when it is not one. */
+function toOrigin(entry: string): string | undefined {
+  try {
+    const u = new URL(entry);
+    if ((u.protocol !== "http:" && u.protocol !== "https:") || u.username || u.password) return undefined;
+    return u.origin;
+  } catch {
+    return undefined;
+  }
+}
+
+/** A comma-separated string (environment) or a list (config file) of origins, normalized and deduplicated. */
+const allowedOriginsSchema = z
+  .union([z.string(), z.array(z.string())], {
+    error: `${label("server.allowedOrigins")} must be a comma-separated string or a list of origins`,
+  })
+  .transform((value, ctx) => {
+    const entries = (Array.isArray(value) ? value : value.split(","))
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    const origins: string[] = [];
+    for (const entry of entries) {
+      const origin = toOrigin(entry);
+      if (origin === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          message: `${label("server.allowedOrigins")} has an invalid origin ${JSON.stringify(entry)}. Use a value like https://haunted.example.com`,
+        });
+      } else if (!origins.includes(origin)) {
+        origins.push(origin);
+      }
+    }
+    return origins;
+  });
+
 export const ConfigSchema = z.object({
   openrouter: z.object({
     apiKey: z
@@ -165,6 +210,7 @@ export const ConfigSchema = z.object({
   server: z.object({
     host: nonEmptyString("server.host"),
     port: numberIn("server.port", { min: 1, max: 65535, integer: true }),
+    allowedOrigins: allowedOriginsSchema,
   }),
   simulator: z.object({
     seed: numberIn("simulator.seed", {

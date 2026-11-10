@@ -78,7 +78,8 @@ export async function buildApp(options: BuildAppOptions): Promise<HauntedApp> {
 
   // Fastify's own logger stays off: every log line goes through the scrubbing logger.
   const app = Fastify({ logger: false });
-  app.addHook("onRequest", createOriginGuard(allowedOrigins(config.server.host, config.server.port), logger));
+  const origins = allowedOrigins(config.server.host, config.server.port, config.server.allowedOrigins);
+  app.addHook("onRequest", createOriginGuard(origins, logger));
   await app.register(fastifyWebsocket);
   hub.register(app);
 

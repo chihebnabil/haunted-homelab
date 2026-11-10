@@ -23,9 +23,12 @@ function hostForUrl(host: string): string {
   return host.includes(":") && !host.startsWith("[") ? `[${host}]` : host;
 }
 
-/** The configured server origin, its loopback aliases, and the Vite dev origins. */
-export function allowedOrigins(host: string, port: number): Set<string> {
-  const origins = new Set<string>(DEV_ORIGINS);
+/**
+ * The configured server origin, its loopback aliases, the Vite dev origins, and any configured
+ * public origins (for example the service's https://….onrender.com URL).
+ */
+export function allowedOrigins(host: string, port: number, publicOrigins: readonly string[] = []): Set<string> {
+  const origins = new Set<string>([...DEV_ORIGINS, ...publicOrigins]);
   for (const h of [host, "127.0.0.1", "localhost", "::1"]) {
     if (h === "0.0.0.0" || h === "::") continue;
     origins.add(`http://${hostForUrl(h)}:${port}`);
