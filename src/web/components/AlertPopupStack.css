@@ -1,0 +1,118 @@
+.alert-popup-stack {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  width: min(24rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.alert-popup-stack__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.alert-popup {
+  pointer-events: auto;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid currentColor;
+  background: rgba(16, 12, 24, 0.94);
+  color: #e8e2f4;
+  box-shadow: 0 0 18px rgba(140, 90, 255, 0.35);
+  animation: alert-popup-in 240ms ease-out;
+}
+
+.alert-popup--warning {
+  border-left-color: #f2b33d;
+}
+
+.alert-popup--critical {
+  border-left-color: #ff4d6a;
+  box-shadow: 0 0 22px rgba(255, 77, 106, 0.45);
+}
+
+.alert-popup--recovery {
+  border-left-color: #5ee6a8;
+  box-shadow: 0 0 18px rgba(94, 230, 168, 0.3);
+}
+
+.alert-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.alert-popup__severity {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.alert-popup--warning .alert-popup__severity {
+  color: #f2b33d;
+}
+
+.alert-popup--critical .alert-popup__severity {
+  color: #ff4d6a;
+}
+
+.alert-popup--recovery .alert-popup__severity {
+  color: #5ee6a8;
+}
+
+.alert-popup__dismiss {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 0 0.25rem;
+}
+
+.alert-popup__dismiss:hover,
+.alert-popup__dismiss:focus-visible {
+  opacity: 1;
+}
+
+.alert-popup__message {
+  margin: 0.4rem 0;
+  line-height: 1.4;
+}
+
+.alert-popup__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.alert-popup__voice-failed {
+  font-size: 0.9rem;
+}
+
+@keyframes alert-popup-in {
+  from {
+    opacity: 0;
+    transform: translateX(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-popup {
+    animation: none;
+  }
+}

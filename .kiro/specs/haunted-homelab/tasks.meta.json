@@ -1,0 +1,624 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Create project scaffold and tooling": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315340296
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315366525
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316509048
+      }
+    ],
+    "1.2 Define shared types in `src/shared/types.ts`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315342704
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316515038
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316589748
+      }
+    ],
+    "1.3 Implement shared helpers": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315343596
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316594279
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316871554
+      }
+    ],
+    "2.1 Implement configuration loading": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315344031
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316594788
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316873159
+      }
+    ],
+    "2.4 Implement secret scrubbing and logger": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315344525
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316595828
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316874192
+      }
+    ],
+    "3.1 Define the data source interface and snapshot reader": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315345045
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316596371
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316875672
+      }
+    ],
+    "4.1 Implement simulator default model and log generation": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315345415
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316888687
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317189366
+      }
+    ],
+    "4.2 Implement incident staging and container operations in `state.ts`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315345814
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317540865
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317880847
+      }
+    ],
+    "4.3 Implement `SimulatorSource` and the data source factory": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315346210
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318342455
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318383093
+      }
+    ],
+    "5. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315346614
+      }
+    ],
+    "6.1 Implement the pure rule engine": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315347051
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316889173
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317189845
+      }
+    ],
+    "6.7 Implement the Monitor scheduler": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315347549
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317541168
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317882100
+      }
+    ],
+    "7.1 Implement `ActionExecutor`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315348022
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316889893
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317190493
+      }
+    ],
+    "7.2 Implement `ProposalStore`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315348442
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317541466
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317882859
+      }
+    ],
+    "8.1 Implement the LLM client and OpenRouter provider": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315348805
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316890511
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317191331
+      }
+    ],
+    "8.2 Implement the TTS client and OpenRouter provider": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315349184
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316891029
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317192058
+      }
+    ],
+    "8.3 Implement `MessageStore`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315349569
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317204693
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317517956
+      }
+    ],
+    "9.1 Implement the fact sheet and fact guard": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315350180
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317541869
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317883878
+      }
+    ],
+    "9.2 Implement mention matching, intent detection, and log events": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315350566
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317542721
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317884809
+      }
+    ],
+    "9.3 Implement persona reply templates": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315350892
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318342728
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318383371
+      }
+    ],
+    "9.4 Implement the persona prompt and chat prompt builder": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315351281
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318342974
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318383697
+      }
+    ],
+    "9.5 Implement proposal validation": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315351653
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318343372
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318383901
+      }
+    ],
+    "10.1 Implement alert templates": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315352105
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318343626
+      },
+      {
+        "executionId": "95807893-c999-4acf-a443-296905ceabc6",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318384134
+      }
+    ],
+    "10.2 Implement the alert proposal policy": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315352466
+      }
+    ],
+    "11.1 Implement `Agent.answer`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315352840
+      }
+    ],
+    "11.2 Implement `Agent.writeAlertMessage` and `Agent.reportActionResult`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315353219
+      }
+    ],
+    "12.1 Implement `AlertService` and the hub interface": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315353632
+      }
+    ],
+    "13. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315353983
+      }
+    ],
+    "14.1 Implement the origin guard and WebSocket hub": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315354413
+      }
+    ],
+    "14.2 Implement HTTP routes": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315354792
+      }
+    ],
+    "14.3 Implement the server entry point": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315355165
+      }
+    ],
+    "15.1 Implement REST and socket clients": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315355566
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317205212
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317519265
+      }
+    ],
+    "15.2 Implement the client store and chat history": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315355949
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317205908
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317519602
+      }
+    ],
+    "15.3 Implement the audio queue": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315356320
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317206911
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317520165
+      }
+    ],
+    "16.1 Implement `StatusPanel`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315356753
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317894490
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318227652
+      }
+    ],
+    "16.2 Implement `AlertPopupStack`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315357290
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317895114
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318228105
+      }
+    ],
+    "16.3 Implement `ChatPage` and `ProposalCard`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315357692
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317895627
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318228813
+      }
+    ],
+    "16.4 Implement `IncidentControl`, `VoiceToggle`, and `PrivacyNotice`": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315358164
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317896446
+      },
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794318228393
+      }
+    ],
+    "16.5 Wire the Web_App together": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315358574
+      }
+    ],
+    "18. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794315359100
+      }
+    ],
+    "1. Set up project scaffold and shared modules": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316871929
+      }
+    ],
+    "2. Implement configuration and secret-safe logging": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316874811
+      }
+    ],
+    "3. Implement the data source interface and Docker source": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794316876246
+      }
+    ],
+    "8. Implement LLM, TTS, and message storage clients": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317518917
+      }
+    ],
+    "15. Implement Web_App data layer": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317520387
+      }
+    ],
+    "6. Implement the rule engine and Monitor": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317882374
+      }
+    ],
+    "7. Implement proposals and the action executor": [
+      {
+        "executionId": "b4aeffa4-c1cd-46ef-8143-001819c1fac2",
+        "chatSessionId": "sess_10bba0fb-8190-47e9-8f67-9a16239182f6",
+        "timestamp": 1794317883400
+      }
+    ]
+  }
+}

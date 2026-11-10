@@ -1,0 +1,56 @@
+.proposal-card {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #6b4fa3;
+  border-radius: 6px;
+  background: rgba(60, 30, 90, 0.35);
+}
+
+.proposal-card__title {
+  font-weight: 600;
+}
+
+.proposal-card__action {
+  text-transform: capitalize;
+  color: #e0c3ff;
+}
+
+.proposal-card__container {
+  font-family: ui-monospace, monospace;
+}
+
+.proposal-card__reason {
+  margin: 0.25rem 0;
+}
+
+.proposal-card__expiry,
+.proposal-card__status {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.proposal-card--confirmed .proposal-card__status {
+  color: #8fe3a0;
+}
+
+.proposal-card--cancelled .proposal-card__status,
+.proposal-card--expired .proposal-card__status {
+  color: #f0a3a3;
+}
+
+.proposal-card__controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.proposal-card__controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.proposal-card__error {
+  margin: 0.5rem 0 0;
+  color: #f0a3a3;
+  font-size: 0.85rem;
+}

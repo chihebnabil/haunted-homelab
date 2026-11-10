@@ -1,0 +1,34 @@
+{
+  "openrouter": {
+    "apiKey": "sk-or-v1-REPLACE_ME",
+    "baseUrl": "https://openrouter.ai/api/v1"
+  },
+  "llm": {
+    "model": "openai/gpt-4o-mini"
+  },
+  "tts": {
+    "model": "openai/gpt-4o-mini-tts-2025-12-15",
+    "voice": "onyx",
+    "instructions": "Speak slowly in a hollow, eerie whisper, like a ghost trapped in the machine."
+  },
+  "dataSource": "simulator",
+  "docker": {
+    "endpoint": "unix:///var/run/docker.sock"
+  },
+  "monitor": {
+    "pollIntervalMs": 5000
+  },
+  "thresholds": {
+    "cpuPercent": 90,
+    "cpuDurationSeconds": 30,
+    "memoryPercent": 90,
+    "diskPercent": 90
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3000
+  },
+  "simulator": {
+    "seed": 1337
+  }
+}

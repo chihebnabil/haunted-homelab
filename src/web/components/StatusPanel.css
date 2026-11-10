@@ -1,0 +1,99 @@
+.status-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.status-panel__header h2,
+.status-panel h3 {
+  margin: 0;
+}
+
+.status-panel__disconnected {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #b33;
+  border-radius: 4px;
+  background: rgba(179, 51, 51, 0.15);
+}
+
+.status-panel__placeholder,
+.status-panel__empty,
+.status-panel__read-at {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.status-panel__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
+}
+
+.status-panel__metric dt {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+.status-panel__metric dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-panel__detail {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.status-panel__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-panel__table th,
+.status-panel__table td {
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.container-state--running {
+  color: #6c6;
+}
+
+.container-state--exited,
+.container-state--restarting {
+  color: #e55;
+}
+
+.container-state--paused,
+.container-state--created {
+  color: #cc6;
+}
+
+.severity-badge {
+  display: inline-block;
+  padding: 0 0.4em;
+  border-radius: 3px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.severity-badge--warning {
+  background: #a87a00;
+  color: #fff;
+}
+
+.severity-badge--critical {
+  background: #b00020;
+  color: #fff;
+}

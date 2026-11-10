@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+# Local config holds the OpenRouter API key
+haunted.config.json
