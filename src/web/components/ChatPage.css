@@ -53,8 +53,9 @@
   background: var(--surface-2);
   font-size: 0.84rem;
   color: var(--text);
-  transition: border-color 0.15s, background-color 0.15s;
+  transition: border-color var(--t-fast), background-color var(--t-fast), transform 0.05s;
 }
+.chat-page__suggestion:active { transform: translateY(1px); }
 .chat-page__suggestion:hover { border-color: rgb(124 245 196 / 0.55); background: var(--accent-soft); }
 
 /* ---------- Messages ---------- */
@@ -75,8 +76,9 @@
   align-self: flex-end;
   padding: 0.6rem 0.9rem;
   border-radius: 14px 14px 4px 14px;
-  background: #1f3a33;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
   border: 1px solid rgb(124 245 196 / 0.22);
+  box-shadow: var(--shadow-1);
 }
 
 .chat-page__entry--ghost {
@@ -175,13 +177,14 @@
   border: 1px solid rgb(255 92 122 / 0.4);
   border-radius: var(--radius-sm);
   background: var(--danger-soft);
-  color: #ffd3dc;
+  color: var(--text);
   font-size: 0.88rem;
 }
 .chat-page__error p { margin: 0; }
 
 .chat-page__form {
   display: flex;
+  align-items: stretch;
   gap: 0.5rem;
   padding: 0.85rem 1rem;
   border-top: 1px solid var(--border);

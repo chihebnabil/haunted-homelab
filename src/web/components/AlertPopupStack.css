@@ -7,7 +7,9 @@
   width: min(23rem, calc(100vw - 1.5rem));
   max-height: calc(100vh - var(--header-h) - 2rem);
   overflow-y: auto;
+  overscroll-behavior: contain;
   pointer-events: none;
+  padding: 0 0.25rem 0.5rem 0;
 }
 
 .alert-popup-stack__bar {
@@ -34,7 +36,8 @@
   font-size: 0.75rem;
   font-weight: 600;
 }
-.alert-popup-stack__clear:hover { background: rgb(255 255 255 / 0.06); }
+.alert-popup-stack__clear { transition: background-color var(--t-fast), border-color var(--t-fast); }
+.alert-popup-stack__clear:hover { background: rgb(255 255 255 / 0.06); border-color: var(--border-hover); }
 
 .alert-popup-stack__list {
   list-style: none;
